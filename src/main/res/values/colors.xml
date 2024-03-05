@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--  white  -->
+    <color name="white">#FFFFFFFF</color>
+
+    <!--  Black  -->
+    <color name="black">#000000</color>
+    <color name="black_10">#1A000000</color>
+
+    <!--  grey  -->
+    <color name="light_grey_zero">#f0ede8</color>
+
+
+    <!--  other  -->
+    <color name="earth">#9a4a3a</color>
+
+
+</resources>
