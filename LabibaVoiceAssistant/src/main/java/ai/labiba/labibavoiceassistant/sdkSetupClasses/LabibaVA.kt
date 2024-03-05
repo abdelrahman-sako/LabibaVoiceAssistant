@@ -89,7 +89,7 @@ object LabibaVA {
         supportFragmentManager: FragmentManager,
         language: String = Constants.languageName.value,
         flag: Int? = null
-    ): BottomSheetDialogFragment {
+    ) {
         setStartLanguage(language)
 
         if (!urls.isBaseAdded())
@@ -98,8 +98,6 @@ object LabibaVA {
 
         val mainDialog = MainDialog()
         mainDialog.show(supportFragmentManager, "mainDialog")
-
-        return mainDialog
     }
 
 }
