@@ -8,6 +8,7 @@ import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.view.WindowMetrics
+import android.view.animation.AnimationUtils
 
 object Views {
 
@@ -16,15 +17,13 @@ object Views {
      * @param hide True: hide systemUI, False: show systemUI
      * @param activity The app activity
      * */
-    fun showOrHideSystemUi(hide:Boolean, activity: Activity){
-        if(hide){
+    fun showOrHideSystemUi(hide: Boolean, activity: Activity) {
+        if (hide) {
             activity.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-        }
-        else{
+        } else {
             activity.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
         }
     }
-
 
 
     /**
@@ -82,5 +81,11 @@ object Views {
 //
 //        }
 //    }
+
+
+    fun animateView(view: View, animation: Int) {
+        val viewAnimation = AnimationUtils.loadLayoutAnimation(view.context, animation)
+        view.startAnimation(viewAnimation.animation)
+    }
 
 }

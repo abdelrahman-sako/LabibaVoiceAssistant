@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.util.Log
 import android.view.View
+import android.view.animation.OvershootInterpolator
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -46,6 +47,73 @@ fun View.fadeOutToGone(durationMs: Long = 200, toAlpha: Float = 0f) {
 
 }
 
+//fade in view
+fun View.fadeInToVisible(durationMs: Long = 200, toAlpha: Float = 1f) {
+    if (this.visibility == View.VISIBLE) {
+        return
+    }
+
+    this.alpha = 0f
+    this.visibility = View.VISIBLE
+    this.animate().alpha(toAlpha).duration = durationMs
+
+
+}
+
+fun View.fadeOutToInvisible(durationMs: Long = 200, toAlpha: Float = 0f) {
+    if (this.visibility == View.GONE || this.visibility == View.INVISIBLE) {
+        return
+    }
+
+    this.animate().alpha(toAlpha).duration = durationMs
+
+    CoroutineScope(Dispatchers.Main).launch {
+        delay(durationMs)
+        this@fadeOutToInvisible.visibility = View.INVISIBLE
+    }
+
+}
+
+fun View.scaleDownToGone(durationMs: Long = 200){
+    if (this.visibility == View.GONE || this.visibility == View.INVISIBLE) {
+        return
+    }
+
+    this.animate().alpha(0f).scaleY(0f).scaleX(0f).duration = durationMs
+
+    CoroutineScope(Dispatchers.Main).launch {
+        delay(durationMs)
+        this@scaleDownToGone.visibility = View.GONE
+    }
+}
+
+fun View.scaleDownToInvisible(durationMs: Long = 200){
+    if (this.visibility == View.GONE || this.visibility == View.INVISIBLE) {
+        return
+    }
+
+    this.animate().alpha(0f).scaleY(0f).scaleX(0f).duration = durationMs
+
+    CoroutineScope(Dispatchers.Main).launch {
+        delay(durationMs)
+        this@scaleDownToInvisible.visibility = View.INVISIBLE
+    }
+}
+
+fun View.scaleUpToVisible(durationMs: Long = 200){
+    if (this.visibility == View.VISIBLE) {
+        return
+    }
+
+    this.scaleX = 0f
+    this.scaleY = 0f
+    this.alpha = 0f
+    this.visibility = View.VISIBLE
+    this.animate().scaleX(1f).scaleY(1f).alpha(1f).setInterpolator(OvershootInterpolator()).duration = durationMs
+
+}
+
+
 fun View.animateAlpha(fromAlpha:Float,toAlpha:Float,durationMs: Long = 200){
 
     this.alpha = fromAlpha
@@ -69,18 +137,7 @@ fun View.isViewInBounds(x: Int, y: Int): Boolean {
     return outRect.contains(x, y)
 }
 
-//fade in view
-fun View.fadeInToVisible(durationMs: Long = 200, toAlpha: Float = 1f) {
-    if (this.visibility == View.VISIBLE) {
-        return
-    }
 
-    this.alpha = 0f
-    this.visibility = View.VISIBLE
-    this.animate().alpha(toAlpha).duration = durationMs
-
-
-}
 
 fun Any.logd(name:String=""){
     Log.d("TESTLOG", "$name $this")

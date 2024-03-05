@@ -1,6 +1,14 @@
 package ai.labiba.labibavoiceassistant.network
 
-import javax.inject.Inject
+import ai.labiba.labibavoiceassistant.enums.LabibaLanguages
+import ai.labiba.labibavoiceassistant.models.Messaging
+import ai.labiba.labibavoiceassistant.other.Constants
+import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVA
 
-class ApiRepository @Inject constructor(private val apiInterface: LabibaApiRetrofitInterface) {
+class ApiRepository(private val apiInterface: LabibaApiRetrofitInterface) {
+
+    suspend fun sendMessage(data: Messaging.Request) = apiInterface.message(data)
+
+    suspend fun getTextToSpeech(text:String,language: LabibaLanguages) = apiInterface.textToSpeech(text = text,LabibaVA.voice.getVoiceBasedOnLanguage(language),language.getTTsCode())
+
 }

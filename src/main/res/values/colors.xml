@@ -10,10 +10,12 @@
 
     <!--  grey  -->
     <color name="light_grey_zero">#f0ede8</color>
+    <color name="wild_sand">#e7e3dc</color>
 
 
     <!--  other  -->
     <color name="earth">#9a4a3a</color>
+    <color name="dark_knight">#101a28</color>
 
 
 </resources>

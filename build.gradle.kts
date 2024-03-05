@@ -1,8 +1,8 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id ("dagger.hilt.android.plugin")
-    id ("kotlin-kapt")
+    id("kotlin-kapt")
+    id("maven-publish")
 }
 
 android {
@@ -12,19 +12,34 @@ android {
     defaultConfig {
         minSdk = 23
 
+        //add proguard roles to aar file
+        consumerProguardFiles("proguard-rules.pro")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
     }
+
+
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
+
+
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -33,8 +48,33 @@ android {
         jvmTarget = "1.8"
     }
 
+
+
     android.viewBinding.enable= true
 }
+
+publishing{
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "ai.labiba"
+            artifactId = "labibavoiceassistant"
+            version = "1.0"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+
+        repositories {
+            maven {
+                name = "labibaVoiceAssistantRepo"
+                url = uri("${project.buildDir}/repo")
+            }
+        }
+
+    }
+}
+
 
 dependencies {
 
@@ -49,7 +89,6 @@ dependencies {
     //by viewModels
     implementation ("androidx.fragment:fragment-ktx:1.6.2")
 
-    
     //Coroutines
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
@@ -60,11 +99,6 @@ dependencies {
 
     //Coil
     implementation("io.coil-kt:coil:2.4.0")
-    implementation("io.coil-kt:coil-gif:2.2.2")
-
-    //Dagger - Hilt
-    implementation ("com.google.dagger:hilt-android:2.48.1")
-    kapt ("com.google.dagger:hilt-android-compiler:2.48.1")
 
     //Room
     implementation ("androidx.room:room-ktx:2.6.1")
@@ -75,8 +109,8 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 //    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'//to be able to receive the response as string
-    implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.1")
-    implementation ("com.squareup.okhttp3:okhttp:5.0.0-alpha.1")
+    implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
+    implementation ("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
 
     //Gson
     implementation ("com.google.code.gson:gson:2.10")

@@ -8,12 +8,9 @@ import android.provider.OpenableColumns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
-import javax.inject.Inject
 
-@HiltViewModel
-class ImageSelectionMethodViewModel @Inject constructor():ViewModel() {
+class ImageSelectionMethodViewModel:ViewModel() {
 
     private val _imageName = MutableLiveData<String?>()
     val imageName:LiveData<String?>

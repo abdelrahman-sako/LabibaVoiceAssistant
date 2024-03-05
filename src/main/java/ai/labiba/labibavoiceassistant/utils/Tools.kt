@@ -1,5 +1,12 @@
 package ai.labiba.labibavoiceassistant.utils
 
+import ai.labiba.labibavoiceassistant.enums.LabibaLanguages
+import ai.labiba.labibavoiceassistant.models.Chat
+import ai.labiba.labibavoiceassistant.other.Constants
+import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal
+import ai.labiba.labibavoiceassistant.utils.ext.logd
+import ai.labiba.labibavoiceassistant.utils.ext.removeUrls
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
@@ -16,24 +23,33 @@ import androidx.annotation.ColorInt
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import org.json.JSONObject
+import java.util.regex.Pattern
 
 
 object Tools {
 
-    fun vibrate(activity: Activity,milis:Long = 100){
+    @SuppressLint("MissingPermission")
+    fun vibrate(activity: Activity, milis: Long = 100) {
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val v = activity.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            v.vibrate(CombinedVibration.createParallel(VibrationEffect.createOneShot(milis,VibrationEffect.DEFAULT_AMPLITUDE)))
-        } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(
+                CombinedVibration.createParallel(
+                    VibrationEffect.createOneShot(
+                        milis,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val v = activity.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            v.vibrate(VibrationEffect.createOneShot(milis,VibrationEffect.DEFAULT_AMPLITUDE))
-        }else{
+            v.vibrate(VibrationEffect.createOneShot(milis, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
             val v = activity.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
             v.vibrate(milis)
         }
-
 
 
     }
@@ -45,7 +61,7 @@ object Tools {
      * @return color (black or white)
      * */
 
-    suspend fun getColorBasedOnBackgroundImage(image:Any?,context: Context):Int{
+    suspend fun getColorBasedOnBackgroundImage(image: Any?, context: Context): Int {
         //get image as bitmap
         val loader = ImageLoader(context)
         val request = ImageRequest.Builder(context)
@@ -57,7 +73,7 @@ object Tools {
         val bitmap = (result as BitmapDrawable).bitmap
 
         //get average image color
-        val bgColor = calculateAverageColorOfABitmap(bitmap,10)
+        val bgColor = calculateAverageColorOfABitmap(bitmap, 10)
 
         //get icon color based on background color (average image color)
         return getColorBasedOnBackgroundColor(bgColor)
@@ -68,7 +84,7 @@ object Tools {
      *  @param color background color
      *  @return color (black or white)
      * */
-     fun getColorBasedOnBackgroundColor(@ColorInt color: Int): Int  {
+    fun getColorBasedOnBackgroundColor(@ColorInt color: Int): Int {
         val red = Color.red(color)
         val green = Color.green(color)
         val blue = Color.blue(color)
@@ -81,7 +97,7 @@ object Tools {
     If pixelSpacing > 1: the average color is an estimate, but higher values mean better performance
     If pixelSpacing == 1: the average color will be the real average
     If pixelSpacing < 1: the method will most likely crash (don't use values below 1)
-    */
+     */
     fun calculateAverageColorOfABitmap(bitmap: Bitmap, pixelSpacing: Int): Int {
         var R = 0
         var G = 0
@@ -103,14 +119,92 @@ object Tools {
         return Color.rgb(R / n, G / n, B / n)
     }
 
-    fun showKeyboard(activity: Activity,view: View){
+    fun showKeyboard(activity: Activity, view: View) {
         val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
     }
 
-    fun hideKeyboard(activity: Activity,view: View){
+    fun hideKeyboard(activity: Activity, view: View) {
         val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken,0)
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
+
+    /**
+     * Detects the language used in the text and changes the voice language and language constants if needed
+     * @param text text to detect
+     * @param removeUrl
+     * */
+    fun detectLabibaLanguageConstant(text: String, removeUrl: Boolean): LabibaLanguages {
+        var mText = text
+        if (removeUrl) mText = mText.removeUrls()
+
+        val arabicPattern =
+            "[\\u0600-\\u06ff]|[\\u0750-\\u077f]|[\\ufb50-\\ufc3f]|[\\ufe70-\\ufefc]" //Working
+        //                String englishPattern = "[iI]";
+        val russianPattern = "[\\u0401\\u0451\\u0410-\\u044f]" //Working
+        val germanyPattern = "[öäüÖÄÜß]" //Working
+        val chinesePattern = "[\\u3000\\u3400-\\u4DBF\\u4E00-\\u9FFF]" //Working
+        if (!Constants.voiceLanguage.equals("de-DE")) {
+            if (Pattern.compile(arabicPattern)
+                    .matcher(mText).find()
+            ) {
+                return LabibaLanguages.ARABIC
+            } else if (Pattern.compile(russianPattern).matcher(mText).find()) {
+                return LabibaLanguages.RUSSIAN
+            } else if (Pattern.compile(germanyPattern).matcher(mText).find()) {
+                return LabibaLanguages.GERMANY
+            } else if (Pattern.compile(chinesePattern).matcher(mText).find()) {
+                return LabibaLanguages.CHINESE
+            } else {
+                return LabibaLanguages.ENGLISH
+            }
+        }
+        return LabibaLanguages.ENGLISH
+    }
+
+
+    /**
+     * This method is used to filter deep link items from the list,
+     * and return only the deep link items to the data callback.
+     *
+     * @param list to be filtered
+     * @return list of items without deep link items
+     * */
+    fun filterDeepLinkItemsAndCallback(list: List<Chat>): List<Chat> {
+        val deepLinkItemList = mutableListOf<Chat>()
+        //filter deeplink items
+        //deeplink items always have only one card and one button,
+        //so check for a Chat object with only one card and one button
+
+        list.forEach {
+            if (it.cards?.size == 1) {
+                if (it.cards?.get(0)?.buttons?.size == 1) {
+                    if (it.cards?.get(0)?.buttons?.get(0)?.type == "create_post") {
+                        deepLinkItemList.add(it)
+                        val payload = it.cards?.get(0)?.buttons?.get(0)?.payload
+
+                        try {
+
+                            //get type and data from payload json string
+                            val payloadJsonObject = JSONObject(payload ?: "")
+                            val type = payloadJsonObject.getString("type")
+                            val data = payloadJsonObject.getJSONObject("data").toString()
+
+                            //callback data to the client
+                            LabibaVAInternal.mLabibaVaDataCallback?.onDataRetrieved(mapOf(type to data))
+
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            }
+        }
+
+        val filteredList = list.toMutableList()
+        filteredList.removeAll(deepLinkItemList)
+
+        return filteredList
+    }
 }
