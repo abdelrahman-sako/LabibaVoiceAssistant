@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="camera">Camera</string>
-    <string name="gallery">Gallery</string>
-    <string name="microphone_permission">Microphone permission</string>
-    <string name="microphone_permission_rationale">In order to use this service, the app needs the microphone permission.</string>
-    <string name="microphone_permission_warning">This feature requires microphone permission.</string>
-    <string name="recipient_id_not_added">Please add at least one recipient id to start conversation on</string>
-</resources>
