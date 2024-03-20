@@ -2,41 +2,66 @@ package ai.labiba.labibavoiceassistant.ui.dialogs.mainDialog
 
 import ai.labiba.labibavoiceassistant.R
 import ai.labiba.labibavoiceassistant.adapter.chatAdapter.ChatAdapter
-import ai.labiba.labibavoiceassistant.adapter.chatAdapter.callbackInterfaces.LabibaUserChatInjectionCallbackInterface
 import ai.labiba.labibavoiceassistant.databinding.DialogMainBinding
 import ai.labiba.labibavoiceassistant.enums.LabibaLanguages
 import ai.labiba.labibavoiceassistant.enums.MessageTypes
+import ai.labiba.labibavoiceassistant.interfaces.LabibaUserChatInjectionCallbackInterface
+import ai.labiba.labibavoiceassistant.interfaces.RecognitionVACallbacks
 import ai.labiba.labibavoiceassistant.models.Chat
 import ai.labiba.labibavoiceassistant.other.Constants
+import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaApiResponseHandle.handleResponse
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal
-import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal.handleResponse
-import ai.labiba.labibavoiceassistant.sdkSetupClasses.RecognitionVACallbacks
+import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal.exoPlayer
+import ai.labiba.labibavoiceassistant.utils.LabibaChatCallbackHandler
 import ai.labiba.labibavoiceassistant.utils.MicPermissionFragment
 import ai.labiba.labibavoiceassistant.utils.SharedUtils
 import ai.labiba.labibavoiceassistant.utils.TTSTools
 import ai.labiba.labibavoiceassistant.utils.Tools
+import ai.labiba.labibavoiceassistant.utils.Views
 import ai.labiba.labibavoiceassistant.utils.apiHandleResponse.Resource
 import ai.labiba.labibavoiceassistant.utils.dialogs.CustomBottomSheetDialogFragment
 import ai.labiba.labibavoiceassistant.utils.ext.changeStatusBarColor
 import ai.labiba.labibavoiceassistant.utils.ext.fadeInToVisible
 import ai.labiba.labibavoiceassistant.utils.ext.fadeOutToGone
+import ai.labiba.labibavoiceassistant.utils.ext.gone
 import ai.labiba.labibavoiceassistant.utils.ext.scaleDownToInvisible
 import ai.labiba.labibavoiceassistant.utils.ext.scaleUpToVisible
 import ai.labiba.labibavoiceassistant.utils.ext.toPx
+import ai.labiba.labibavoiceassistant.utils.ext.visible
 import android.content.DialogInterface
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.speech.SpeechRecognizer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.OvershootInterpolator
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager
+import coil.ImageLoader
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.load
+import coil.request.onAnimationEnd
+import coil.request.repeatCount
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.chip.Chip
+import com.google.android.material.shape.ShapeAppearanceModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.LinkedList
 import java.util.Queue
+import kotlin.random.Random
 
 
 class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
@@ -87,6 +112,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
         setupUI()
         setupRecyclerView()
+        setupSuggestions()
         checkRequiredParameters()
         setupListeners()
         setupObservers()
@@ -98,6 +124,23 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
         LabibaVAInternal.dialog = this
 
         LabibaVAInternal.setupGeneralTheme(binding, this)
+        LabibaVAInternal.setExoplayer(requireActivity())
+
+        if(LabibaVAInternal.fullScreen){
+
+            //remove drag view
+            binding.materialCardView.gone()
+
+            //remove rounded top corners background
+            binding.labibaVaDialogConstraintLayout.background = ColorDrawable(Color.parseColor(LabibaVAInternal.labibaVaTheme.general.backgroundColor))
+
+            //set height to full screen
+            binding.labibaVaDialogConstraintLayout.layoutParams.height = Views.getScreenHeight(requireActivity())
+
+            //disable swipe down
+            (dialog as BottomSheetDialog).behavior.isDraggable = false
+
+        }
 
     }
 
@@ -107,7 +150,95 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
             adapter = chatAdapter
         }
 
+
+        chatAdapter.setCallbackInterface(
+            LabibaChatCallbackHandler(
+                viewModel,
+                requireActivity(),
+                lifecycleScope
+            )
+        )
         LabibaVAInternal.mLabibaUserInjectionCallback = this
+
+    }
+
+    private fun setupSuggestions(){
+        //always remove all views before adding any, this fixes a bug where old choices would not be removed
+        binding.mainVaSuggestionChipGroup.removeAllViews()
+        val theme = LabibaVAInternal.labibaVaTheme.suggestions
+
+        if(theme.listOfSuggestions.isNullOrEmpty()){
+            binding.mainVaSuggestionChipGroup.gone()
+            return
+        }
+
+        binding.mainVaSuggestionChipGroup.chipSpacingHorizontal = theme.horizontalSpacing
+        binding.mainVaSuggestionChipGroup.chipSpacingVertical = theme.verticalSpacing
+
+
+        LabibaVAInternal.labibaVaTheme.suggestions.listOfSuggestions?.forEach {chipText ->
+            val chip = Chip(requireActivity())
+            chip.text = chipText
+
+            //required for vertical spacing to work
+            chip.setEnsureMinTouchTargetSize(false)
+
+            //apply theme
+            //text
+            chip.textSize = theme.textSize.toFloat()
+            chip.setTextColor(Color.parseColor(theme.textColor))
+
+            //background color
+            chip.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor(theme.backgroundColor))
+
+            //radius
+            chip.shapeAppearanceModel = ShapeAppearanceModel.Builder().apply {
+                setAllCornerSizes(theme.radius.toFloat())
+            }.build()
+
+            //stroke
+            chip.chipStrokeColor = ColorStateList.valueOf(Color.parseColor(theme.strokeColor))
+            chip.chipStrokeWidth = theme.strokeWidth.toFloat()
+
+
+            //animate chip
+            chip.alpha =0f
+            chip.scaleX =0f
+            chip.scaleY =0f
+
+            val startDelay = Random.nextLong(0,400)
+
+            chip.animate().alpha(1f).setDuration(600).setStartDelay(startDelay).start()
+            chip.animate().scaleX(1f).scaleY(1f).setDuration(400).setStartDelay(startDelay).setInterpolator(
+                OvershootInterpolator()
+            ).start()
+
+            //add chip to chipgroup
+            binding.mainVaSuggestionChipGroup.addView(chip)
+
+            //click listener
+            chip.setOnClickListener {
+
+                //stop and clear any audio playing/not played yet
+                TTSTools.stopAndClearAudio()
+
+                //stop message and tts requests
+                viewModel.stopRequests()
+
+                //clear any messages in the queue not shown yet
+                messagesQueue.clear()
+
+                chatAdapter.addUserText(chipText)
+
+                viewModel.requestMessage(
+                    MessageTypes.CHOICE.convertToModel(
+                        chipText,
+                        sharedUtils.getSenderId()
+                    )
+                )
+
+            }
+        }
 
     }
 
@@ -136,7 +267,9 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
                 //show wave line and hide mic button
                 binding.mainVaMicBtnImageFilterView.scaleDownToInvisible()
+                binding.mainVaWaveLineView.startAnim()
                 binding.mainVaWaveLineView.fadeInToVisible()
+
 
                 //stop and clear any audio playing/not played yet
                 TTSTools.stopAndClearAudio()
@@ -252,7 +385,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                             mTTSQueue.offer(Pair(it, language ?: LabibaLanguages.ENGLISH))
 
                             //change speechRecognition language to last TTS detected language
-                            Constants.voiceLanguage = language?.getSrCode() ?:"en-US"
+                            Constants.voiceLanguage = language?.getSrCode() ?: "en-US"
                         })
 
                     }
@@ -282,31 +415,33 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                         TTSTools.playAudio(it.data?.audioUrl ?: "") {
                             //Automatically TTSTools plays the next audio on audio play complete
 
+                            lifecycleScope.launch(Dispatchers.Main) {
 
-                            //on audio play complete show next text in chat
-                            val chatItem = messagesQueue.poll()
+                                //on audio play complete show next text in chat
+                                val chatItem = messagesQueue.poll()
 
-                            if (chatItem != null) {
-                                chatAdapter.submitList(listOf(chatItem))
-                            }
+                                if (chatItem != null) {
+                                    Tools.addChatItemToAdapterBasedOnType(chatAdapter, chatItem)
+                                }
 
-                            //auto listening
-                            if (TTSTools.isQueueEmpty() && LabibaVAInternal.labibaVaTheme.themeSettings.isAutoListening) {
-                                if (_binding != null) {
-                                    binding.mainVaMicBtnImageFilterView.performClick()
+                                //auto listening
+                                if (TTSTools.isQueueEmpty() && LabibaVAInternal.labibaVaTheme.themeSettings.isAutoListening) {
+                                    if (_binding != null) {
+                                        binding.mainVaMicBtnImageFilterView.performClick()
+                                    }
+                                }
+
+
+                                //since the audio must be played in order, the audio is requested one by one using a queue
+                                //request the next TTS audio from the queue
+                                if (mTTSQueue.peek() != null) {
+                                    val tts = mTTSQueue.poll()
+                                    viewModel.requestTextToSpeech(
+                                        tts?.first ?: "",
+                                        tts?.second ?: LabibaLanguages.ENGLISH
+                                    )
                                 }
                             }
-
-                        }
-
-                        //since the audio must be played in order, the audio is requested one by one using a queue
-                        //request the next TTS audio from the queue
-                        if (mTTSQueue.peek() != null) {
-                            val tts = mTTSQueue.poll()
-                            viewModel.requestTextToSpeech(
-                                tts?.first ?: "",
-                                tts?.second ?: LabibaLanguages.ENGLISH
-                            )
                         }
                     }
 
@@ -369,6 +504,11 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
             binding.mainVaWaveLineView.release()
         }
 
+        exoPlayer?.stop()
+        exoPlayer?.release()
+
+        LabibaVAInternal.dialog = null
+
         super.onDestroyView()
         _binding = null
     }
@@ -396,8 +536,9 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
             )
         }
 
+        binding.mainVaWaveLineView.stopAnim()
         //hide wave line view and show mic button
-        binding.mainVaWaveLineView.fadeOutToGone()
+        binding.mainVaWaveLineView.gone()
         binding.mainVaMicBtnImageFilterView.scaleUpToVisible(500)
 
 
@@ -409,9 +550,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
         //control wave line view animation using RMS value
         if (_binding != null) {
-            if (!binding.mainVaWaveLineView.isRunning) {
-                binding.mainVaWaveLineView.startAnim()
-            }
+            binding.mainVaWaveLineView.startAnim()
 
             if (skippedRounds >= skipNumbers) {
                 binding.mainVaWaveLineView.setVolume(p0.toInt() * 10)
@@ -494,7 +633,8 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
         } else {
             errorRetryCount = 0
 
-            binding.mainVaWaveLineView.fadeOutToGone()
+            binding.mainVaWaveLineView.stopAnim()
+            binding.mainVaWaveLineView.gone()
             binding.mainVaMicBtnImageFilterView.scaleUpToVisible()
         }
 
@@ -522,6 +662,40 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
     override fun clearTypingAndChoices() {
         chatAdapter.cleanList()
+    }
+
+    override fun addGifBackground(url: String, elevation: Float, loop: Boolean) {
+        val imageLoader = ImageLoader.Builder(requireActivity())
+            .components {
+                if (SDK_INT >= 28) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+            }
+            .build()
+
+
+        // match_parent on image views refuse to work, so it is set programmatically
+        binding.labibaVaGifShapeableImageView.layoutParams.apply {
+            width = binding.dialogContainer.width
+            height = binding.dialogContainer.height
+        }
+
+        binding.labibaVaGifShapeableImageView.elevation = elevation
+
+        binding.labibaVaGifShapeableImageView.visible()
+        binding.labibaVaGifShapeableImageView.load(url, imageLoader) {
+            crossfade(true)
+
+            if (!loop) {
+                repeatCount(0)
+            }
+
+            onAnimationEnd {
+                binding.labibaVaGifShapeableImageView.fadeOutToGone()
+            }
+        }
     }
 
 

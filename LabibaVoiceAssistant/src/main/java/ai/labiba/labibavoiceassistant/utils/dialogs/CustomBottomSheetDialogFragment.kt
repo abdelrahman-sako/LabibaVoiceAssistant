@@ -67,6 +67,9 @@ abstract class CustomBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
         dialog.setOnShowListener {
             dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+            dialog.behavior.skipCollapsed = false
+            dialog.behavior.hideFriction = 0.2f
         }
     }
 

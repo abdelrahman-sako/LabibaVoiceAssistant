@@ -6,7 +6,6 @@ import ai.labiba.labibavoiceassistant.enums.LabibaLanguages
 import ai.labiba.labibavoiceassistant.interfaces.LabibaVaDataCallbackInterface
 import ai.labiba.labibavoiceassistant.other.Constants
 import ai.labiba.labibavoiceassistant.ui.dialogs.mainDialog.MainDialog
-import android.app.Dialog
 import android.view.View
 import androidx.annotation.Keep
 import androidx.fragment.app.FragmentManager
@@ -85,16 +84,25 @@ object LabibaVA {
         LabibaVAInternal.clearTypingAndChoices()
     }
 
+    fun addGifBackground(url:String,elevation:Float = 0f,loop:Boolean = true){
+        LabibaVAInternal.addGifBackground(url,elevation,loop)
+    }
+
     fun startConversation(
         supportFragmentManager: FragmentManager,
         language: String = Constants.languageName.value,
-        flag: Int? = null
+        flag: Map<String,Any> = mapOf(),
+        fullScreen:Boolean = false
     ) {
         setStartLanguage(language)
+        LabibaVAInternal.flags = flag.toMutableMap()
+        LabibaVAInternal.fullScreen = fullScreen
 
         if (!urls.isBaseAdded())
             throw Exception("Urls not added, please use Labiba.urls = LabibaUrls.Builder()... and add server urls (you need at least to add the generalBaseUrl and messagingPath), if you don't have the please contact with the business team.")
 
+        //close previous dialog if exists
+        getDialog()?.dismiss()
 
         val mainDialog = MainDialog()
         mainDialog.show(supportFragmentManager, "mainDialog")

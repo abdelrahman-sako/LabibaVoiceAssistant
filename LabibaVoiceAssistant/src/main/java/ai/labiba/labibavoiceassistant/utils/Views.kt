@@ -45,6 +45,25 @@ object Views {
 
     }
 
+    /**
+     * Get Screen height
+     * @param activity The Activity wants to get height for it
+     * * @return Screen height pixel
+     * */
+    fun getScreenHeight(activity: Activity): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val windowMetrics: WindowMetrics = activity.windowManager.currentWindowMetrics
+            val insets: Insets = windowMetrics.windowInsets
+                .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
+            windowMetrics.bounds.height() - insets.top - insets.bottom
+        } else {
+            val displayMetrics = DisplayMetrics()
+            activity.windowManager.defaultDisplay.getMetrics(displayMetrics)
+            displayMetrics.heightPixels
+        }
+
+    }
+
 
     /**
      * Get Item Width for Dynamic width
@@ -81,11 +100,5 @@ object Views {
 //
 //        }
 //    }
-
-
-    fun animateView(view: View, animation: Int) {
-        val viewAnimation = AnimationUtils.loadLayoutAnimation(view.context, animation)
-        view.startAnimation(viewAnimation.animation)
-    }
 
 }

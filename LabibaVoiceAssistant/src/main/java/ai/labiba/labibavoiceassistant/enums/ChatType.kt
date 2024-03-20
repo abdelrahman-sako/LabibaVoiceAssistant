@@ -3,7 +3,6 @@ package ai.labiba.labibavoiceassistant.enums
 enum class ChatType {
     TYPING,
     USER_TEXT,
-    USER_IMAGE,
     BOT_TEXT,
     CHOICES,
     CARDS,
@@ -11,5 +10,6 @@ enum class ChatType {
     MEDIA_VIDEO,
     MEDIA_AUDIO,
     CUSTOM,
+    CREATE_POST,
     NON
 }

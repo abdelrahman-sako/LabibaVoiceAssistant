@@ -5,17 +5,18 @@ import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.BotAudioViewHo
 import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.BotImageViewHolder
 import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.BotTextViewHolder
 import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.BotVideoViewHolder
+import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.CardListViewHolder
+import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.ChoiceViewHolder
 import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.CustomViewViewHolder
 import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.TypingViewHolder
-import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.UserImageViewHolder
 import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.UserTextViewHolder
 import ai.labiba.labibavoiceassistant.enums.ChatType
+import ai.labiba.labibavoiceassistant.interfaces.LabibaChatAdapterCallbackInterface
 import ai.labiba.labibavoiceassistant.models.Card
 import ai.labiba.labibavoiceassistant.models.Chat
 import ai.labiba.labibavoiceassistant.models.Choice
+import ai.labiba.labibavoiceassistant.utils.Animations
 import ai.labiba.labibavoiceassistant.utils.Tools
-import ai.labiba.labibavoiceassistant.utils.Views
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,11 @@ import java.util.UUID
 
 class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private var callback: LabibaChatAdapterCallbackInterface? = null
+    fun setCallbackInterface(callback: LabibaChatAdapterCallbackInterface) {
+        this.callback = callback
+    }
+
 
     private val diffCallback = object : DiffUtil.ItemCallback<Chat>() {
         override fun areItemsTheSame(
@@ -49,15 +55,14 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
         when (diff.currentList[position].type) {
             ChatType.TYPING -> R.layout.item_typing
             ChatType.USER_TEXT -> R.layout.item_text_bubble_user
-            ChatType.USER_IMAGE -> R.layout.item_image_user
             ChatType.BOT_TEXT -> R.layout.item_text_bubble_bot
-            ChatType.CHOICES -> R.layout.item_recycler_view
-            ChatType.CARDS -> R.layout.item_recycler_view
-            ChatType.MEDIA_IMAGE -> R.layout.item_image_bot
+            ChatType.CHOICES -> R.layout.item_choice
+            ChatType.CARDS -> R.layout.item_card_list_horizontal
+            ChatType.MEDIA_IMAGE -> R.layout.item_image
             ChatType.MEDIA_VIDEO -> R.layout.item_video
             ChatType.MEDIA_AUDIO -> R.layout.item_audio
             ChatType.CUSTOM -> R.layout.item_va_custom_view
-            ChatType.NON -> 0
+            else -> 0
         }
 
 
@@ -78,25 +83,34 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
                 view
             )
 
-            R.layout.item_image_user -> UserImageViewHolder(
-                view
-            )
 
-            R.layout.item_image_bot -> BotImageViewHolder(
+            R.layout.item_image -> BotImageViewHolder(
                 view
             )
 
             R.layout.item_video -> BotVideoViewHolder(
-                view
+                view, callback
             )
+
             R.layout.item_va_custom_view -> {
                 CustomViewViewHolder(
                     view
                 )
             }
+
+            R.layout.item_choice -> {
+                ChoiceViewHolder(
+                    view, callback
+                )
+            }
+
+            R.layout.item_card_list_horizontal -> {
+                CardListViewHolder(view)
+            }
+
             else -> {
                 BotAudioViewHolder(
-                    view
+                    view, callback
                 )
             }
         }
@@ -111,31 +125,24 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
             }
 
             is UserTextViewHolder -> {
+                Animations.animateView(holder.itemView, R.anim.layout_animation_fall_down)
                 holder.onBind(item.text ?: "")
-                Views.animateView(holder.itemView, R.anim.layout_animation_fall_down)
             }
 
             is BotTextViewHolder -> {
 
                 if (position == 0 && diff.currentList.size > 1) { //scale down if user text exists
-                    Views.animateView(holder.itemView, R.anim.layout_animation_scale_down)
+                    Animations.animateView(holder.itemView, R.anim.layout_animation_scale_down)
                     holder.onBind(item.text ?: "", true)
 
                 } else {  //default animation
-                    Views.animateView(holder.itemView, R.anim.layout_animation_fall_down)
+                    Animations.animateView(holder.itemView, R.anim.layout_animation_fall_down)
                     holder.onBind(item.text ?: "", false)
 
                 }
 
             }
 
-            is UserImageViewHolder -> {
-                if (item.mediaUrl.isNullOrEmpty() && item.image != null) {
-                    holder.onBind(item.image!!)
-                } else {
-                    holder.onBind(item.mediaUrl ?: "")
-                }
-            }
 
             is BotImageViewHolder -> {
                 holder.onBind(item.mediaUrl ?: "")
@@ -148,9 +155,19 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
             is BotAudioViewHolder -> {
                 holder.onBind(item.mediaUrl ?: "")
             }
+
             is CustomViewViewHolder -> {
+                Animations.animateView(holder.itemView, R.anim.layout_animation_fall_down)
                 holder.bind(item)
-                Views.animateView(holder.itemView, R.anim.layout_animation_fall_down)
+            }
+
+            is ChoiceViewHolder -> {
+                holder.onBind(item)
+            }
+
+            is CardListViewHolder -> {
+                Animations.animateView(holder.itemView, R.anim.layout_animation_fall_down)
+                holder.onBind(item)
             }
         }
     }
@@ -162,13 +179,7 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
 
     fun submitList(list: List<Chat>, onListSubmitted: (() -> Unit)? = null) {
 
-        //filter deeplink items
-        val filteredList = Tools.filterDeepLinkItemsAndCallback(list).toMutableList()
-
-        //todo remove this when choices are handled
-        if (filteredList.size == 1 && filteredList.first().type == ChatType.CHOICES) {
-            filteredList.clear()
-        }
+        val filteredList = Tools.filterDeepLinkItemsAndCallback(list)
 
         if (filteredList.isNotEmpty()) {
             diff.submitList(filteredList) {
@@ -187,6 +198,11 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
         var list = diff.currentList.toMutableList()
 
         list = list.filter { it.type != ChatType.TYPING }.toMutableList()
+
+        if (list.find { it.type == ChatType.CUSTOM } != null && list.size >= 3) {
+            list.clear()
+        }
+
 
         list.add(
             Chat().setData(
@@ -221,6 +237,11 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
 
     fun addUserText(message: String, onUserTextAdded: (() -> Unit)? = null) {
         val temp = diff.currentList.toMutableList()
+
+        if (temp.find { it.type == ChatType.CUSTOM } != null && temp.size >= 3) {
+            temp.clear()
+        }
+
         temp.add(Chat().setData(chatType = ChatType.USER_TEXT, textMessage = message))
 
         diff.submitList(
@@ -286,27 +307,7 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
         val list = ArrayList(diff.currentList)
         list.add(Chat().setData(chatType = ChatType.CARDS, cards = cardsList))
 
-        //filter deeplink items
-        val filteredList = Tools.filterDeepLinkItemsAndCallback(list)
 
-        if (filteredList.isNotEmpty()) {
-            diff.submitList(filteredList) {
-                listUpdatedListener?.invoke()
-            }
-        }
-    }
-
-    fun addUserImage(url: String) {
-        val list = ArrayList(diff.currentList)
-        list.add(Chat().setData(chatType = ChatType.USER_IMAGE, mediaUrl = url))
-        diff.submitList(list) {
-            listUpdatedListener?.invoke()
-        }
-    }
-
-    fun addUserLocation(image: Bitmap) {
-        val list = ArrayList(diff.currentList)
-        list.add(Chat().setData(chatType = ChatType.USER_IMAGE, image = image))
         diff.submitList(list) {
             listUpdatedListener?.invoke()
         }
@@ -382,6 +383,16 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
         }) {
             listUpdatedListener?.invoke()
         }
+    }
+
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+
+        //stop playing audio
+        if (holder is BotAudioViewHolder) {
+            holder.onRecycled()
+        }
+
+        super.onViewRecycled(holder)
     }
 
 

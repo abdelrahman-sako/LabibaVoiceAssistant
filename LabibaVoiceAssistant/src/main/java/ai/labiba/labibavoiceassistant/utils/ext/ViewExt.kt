@@ -8,11 +8,18 @@ import android.util.Log
 import android.view.View
 import android.view.animation.OvershootInterpolator
 import androidx.core.content.ContextCompat
+import androidx.media3.common.Player
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 //disable buttons for some time
 fun View.disableForSomeTime(duration: Long = 200) {
@@ -55,7 +62,7 @@ fun View.fadeInToVisible(durationMs: Long = 200, toAlpha: Float = 1f) {
 
     this.alpha = 0f
     this.visibility = View.VISIBLE
-    this.animate().alpha(toAlpha).duration = durationMs
+    this.animate().alpha(toAlpha).setDuration(durationMs)
 
 
 }
@@ -142,6 +149,15 @@ fun View.isViewInBounds(x: Int, y: Int): Boolean {
 fun Any.logd(name:String=""){
     Log.d("TESTLOG", "$name $this")
 }
+
+fun Player.currentPositionFlow(
+    updateFrequency: Duration = 1.seconds,
+) = flow {
+    while (true) {
+        if (isPlaying) emit(currentPosition.toDuration(DurationUnit.MILLISECONDS))
+        delay(updateFrequency)
+    }
+}.flowOn(Dispatchers.Main)
 
 
 //fun Snackbar.applyTheme():Snackbar {

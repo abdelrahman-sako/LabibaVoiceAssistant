@@ -17,6 +17,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!--   match_parent on image views refuse to work, so it is set programmatically   -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/labiba_va_gif_shapeable_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay_card_top_corners_30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/materialCardView"
             android:layout_width="48dp"
@@ -33,17 +45,44 @@
             android:id="@+id/main_va_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constrainedHeight="true"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="15dp"
+            android:paddingBottom="35dp"
+            android:clipToPadding="false"
+            android:minHeight="400dp"
             android:overScrollMode="never"
             android:requiresFadingEdge="vertical"
-            android:minHeight="400dp"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintBottom_toTopOf="@+id/main_va_mic_btn_image_filter_view"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_max="600dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialCardView"
+            app:layout_constraintVertical_bias="0.0" />
+
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:overScrollMode="never"
             app:layout_constraintBottom_toTopOf="@+id/main_va_mic_btn_image_filter_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/materialCardView" />
+            >
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/main_va_suggestion_chip_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                android:layout_marginBottom="20dp"
+                android:paddingHorizontal="15dp"
+                android:clipToPadding="false"
+                />
+
+        </HorizontalScrollView>
+
 
         <androidx.constraintlayout.utils.widget.ImageFilterView
             android:id="@+id/main_va_mic_btn_image_filter_view"
@@ -64,11 +103,13 @@
             android:layout_height="0dp"
             android:visibility="gone"
             app:wlvLineColor="@color/wild_sand"
-            app:wlvBackgroundColor="@color/black"
+            app:wlvBackgroundColor="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/main_va_recycler_view" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

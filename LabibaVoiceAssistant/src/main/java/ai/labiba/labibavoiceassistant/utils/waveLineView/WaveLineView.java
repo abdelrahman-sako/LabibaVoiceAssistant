@@ -300,14 +300,18 @@ public class WaveLineView extends RenderView {
 
     @Override
     public void startAnim() {
-        initParameters();
-        super.startAnim();
+        if(!isRunning()) {
+            initParameters();
+            super.startAnim();
+        }
     }
 
     @Override
     public void stopAnim() {
-        super.stopAnim();
-        clearDraw();
+        if(isRunning()) {
+            super.stopAnim();
+            clearDraw();
+        }
     }
 
     //清空画布所有内容

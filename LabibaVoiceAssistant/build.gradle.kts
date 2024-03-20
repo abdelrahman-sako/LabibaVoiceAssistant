@@ -1,8 +1,8 @@
 plugins {
-    id("maven-publish")
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
+    id("maven-publish")
 }
 
 android {
@@ -28,7 +28,6 @@ android {
             )
         }
     }
-
 
 
 
@@ -68,8 +67,8 @@ publishing{
 
         repositories {
             maven {
-                name = "LabibaVoiceAssistant"
-                url = uri("${project.buildDir}/LabibaVoiceAssistant")
+                name = "labibaVoiceAssistantRepo"
+                url = uri("${project.buildDir}/repo")
             }
         }
 
@@ -99,7 +98,9 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
 
     //Coil
-    implementation("io.coil-kt:coil:2.4.0")
+    implementation("io.coil-kt:coil:2.6.0")
+    implementation("io.coil-kt:coil-video:2.6.0")
+    implementation("io.coil-kt:coil-gif:2.6.0")
 
     //Room
     implementation ("androidx.room:room-ktx:2.6.1")
@@ -115,5 +116,11 @@ dependencies {
 
     //Gson
     implementation ("com.google.code.gson:gson:2.10")
+
+    //exo player
+    implementation("androidx.media3:media3-exoplayer:1.3.0")
+    implementation("androidx.media3:media3-exoplayer-dash:1.3.0")
+    implementation("androidx.media3:media3-ui:1.3.0")
+
 
 }

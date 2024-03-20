@@ -1,7 +1,10 @@
 package ai.labiba.labibavoiceassistant.models
 
 import ai.labiba.labibavoiceassistant.enums.MediaType
+import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal
+import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import org.json.JSONObject
 import java.util.*
 
 
@@ -41,7 +44,9 @@ class Messaging {
                         @SerializedName("sharable")
                         val sharable: Boolean,
                         @SerializedName("template_type")
-                        val templateType: String
+                        val templateType: String,
+                        @SerializedName("url")
+                        val url: String
                     )
                 }
             }
@@ -151,8 +156,14 @@ class Messaging {
         val senderObj = Request.Entry.Messaging.Sender(senderId)
         val recipientObj = Request.Entry.Messaging.Recipient(recipientId)
 
-        val referralObj =
-            Request.Entry.Messaging.Referral("[{\"source\":\"mobile\"},{\"GoogleServices\":true}]")
+        val refMap = LabibaVAInternal.flags
+        refMap.put("source", "mobile")
+        refMap.put("GoogleServices", true)
+
+
+
+        val referralObj = Request.Entry.Messaging.Referral(convertFlagMapToRefJson(refMap))
+
 
         val messages = Request.Entry.Messaging(
             message = messageObj,
@@ -169,8 +180,12 @@ class Messaging {
         val senderObj = Request.Entry.Messaging.Sender(senderId)
         val recipientObj = Request.Entry.Messaging.Recipient(recipientId)
 
-        val referralObj =
-            Request.Entry.Messaging.Referral("[{\"source\":\"mobile\"},{\"GoogleServices\":true}]")
+
+        val refMap = LabibaVAInternal.flags
+        refMap.put("source", "mobile")
+        refMap.put("GoogleServices", true)
+
+        val referralObj = Request.Entry.Messaging.Referral(convertFlagMapToRefJson(refMap))
 
         val messages = Request.Entry.Messaging(
             message = null,
@@ -203,8 +218,11 @@ class Messaging {
         val senderObj = Request.Entry.Messaging.Sender(senderId)
         val recipientObj = Request.Entry.Messaging.Recipient(recipientId)
 
-        val referralObj =
-            Request.Entry.Messaging.Referral("[{\"source\":\"mobile\"},{\"GoogleServices\":true}]")
+        val refMap = LabibaVAInternal.flags
+        refMap.put("source", "mobile")
+        refMap.put("GoogleServices", true)
+
+        val referralObj = Request.Entry.Messaging.Referral(convertFlagMapToRefJson(refMap))
 
         val messages = Request.Entry.Messaging(
             message = message,
@@ -236,8 +254,11 @@ class Messaging {
         val senderObj = Request.Entry.Messaging.Sender(senderId)
         val recipientObj = Request.Entry.Messaging.Recipient(recipientId)
 
-        val referralObj =
-            Request.Entry.Messaging.Referral("[{\"source\":\"mobile\"},{\"GoogleServices\":true}]")
+        val refMap = LabibaVAInternal.flags
+        refMap.put("source", "mobile")
+        refMap.put("GoogleServices", true)
+
+        val referralObj = Request.Entry.Messaging.Referral(convertFlagMapToRefJson(refMap))
 
         val messages = Request.Entry.Messaging(
             message = message,
@@ -247,5 +268,27 @@ class Messaging {
         )
         val entry = Request.Entry(listOf(messages))
         return Request(listOf(entry))
+    }
+
+    private fun convertFlagMapToRefJson(flags: MutableMap<String, Any>): String {
+        val gson = Gson()
+        val jsonList = flags.entries.map { entry ->
+            when (val value = entry.value) {
+                is String -> gson.toJsonTree(mapOf(entry.key to value))
+                is Boolean -> gson.toJsonTree(mapOf(entry.key to value))
+                is Int -> gson.toJsonTree(mapOf(entry.key to value))
+                is Float -> gson.toJsonTree(mapOf(entry.key to value))
+                is Double -> gson.toJsonTree(mapOf(entry.key to value))
+                else -> {
+                    try {
+                        gson.toJsonTree(mapOf(entry.key to value))
+                    }catch (e:Exception){
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }.filterNotNull()
+
+        return gson.toJson(jsonList)
     }
 }

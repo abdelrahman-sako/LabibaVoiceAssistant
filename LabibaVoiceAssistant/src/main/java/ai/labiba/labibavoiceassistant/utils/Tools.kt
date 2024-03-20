@@ -1,5 +1,7 @@
 package ai.labiba.labibavoiceassistant.utils
 
+import ai.labiba.labibavoiceassistant.adapter.chatAdapter.ChatAdapter
+import ai.labiba.labibavoiceassistant.enums.ChatType
 import ai.labiba.labibavoiceassistant.enums.LabibaLanguages
 import ai.labiba.labibavoiceassistant.models.Chat
 import ai.labiba.labibavoiceassistant.other.Constants
@@ -23,7 +25,6 @@ import androidx.annotation.ColorInt
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
-import org.json.JSONObject
 import java.util.regex.Pattern
 
 
@@ -174,32 +175,21 @@ object Tools {
     fun filterDeepLinkItemsAndCallback(list: List<Chat>): List<Chat> {
         val deepLinkItemList = mutableListOf<Chat>()
         //filter deeplink items
-        //deeplink items always have only one card and one button,
-        //so check for a Chat object with only one card and one button
-
         list.forEach {
-            if (it.cards?.size == 1) {
-                if (it.cards?.get(0)?.buttons?.size == 1) {
-                    if (it.cards?.get(0)?.buttons?.get(0)?.type == "create_post") {
-                        deepLinkItemList.add(it)
-                        val payload = it.cards?.get(0)?.buttons?.get(0)?.payload
-
-                        try {
-
-                            //get type and data from payload json string
-                            val payloadJsonObject = JSONObject(payload ?: "")
-                            val type = payloadJsonObject.getString("type")
-                            val data = payloadJsonObject.getJSONObject("data").toString()
-
-                            //callback data to the client
-                            LabibaVAInternal.mLabibaVaDataCallback?.onDataRetrieved(mapOf(type to data))
-
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
+            if (it.type == ChatType.CREATE_POST) {
+                deepLinkItemList.add(it)
+                val payload = it.createPostPayload
+                //callback data to the client
+                LabibaVAInternal.mLabibaVaDataCallback?.onDataRetrieved(
+                    mapOf(
+                        payload ?: Pair(
+                            "",
+                            ""
+                        )
+                    )
+                )
             }
+
         }
 
         val filteredList = list.toMutableList()
@@ -207,4 +197,40 @@ object Tools {
 
         return filteredList
     }
+
+    fun addChatItemToAdapterBasedOnType(adapter: ChatAdapter, item: Chat) {
+
+
+        when (item.type) {
+            ChatType.CARDS -> {
+                adapter.addCards(item.cards ?: listOf())
+            }
+
+            ChatType.MEDIA_IMAGE -> {
+                adapter.addBotImage(item.mediaUrl ?: "")
+            }
+
+            ChatType.MEDIA_VIDEO -> {
+                adapter.addVideo(item.mediaUrl ?: "")
+            }
+
+            ChatType.MEDIA_AUDIO -> {
+                adapter.addAudio(item.mediaUrl ?: "")
+            }
+
+            ChatType.CREATE_POST -> {
+                //send create_post callback to client
+                filterDeepLinkItemsAndCallback(listOf(item))
+            }
+
+            ChatType.BOT_TEXT ->{
+                adapter.addBotText(item.text ?: "")
+            }
+
+            else -> {
+                adapter.submitList(listOf(item))
+            }
+        }
+    }
+
 }

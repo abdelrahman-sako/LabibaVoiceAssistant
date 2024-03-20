@@ -18,8 +18,7 @@ class BotTextViewHolder(private val itemView: View) : ViewHolder(itemView) {
     fun onBind(text: String,scaledDown:Boolean) {
 
         if(scaledDown || text.length > 100){
-            botText.textSize = LabibaVAInternal.labibaVaTheme.botText.textSize * 0.5f
-
+            botText.textSize = LabibaVAInternal.labibaVaTheme.botText.scaledDownTextSize.toFloat()
         }else{
             botText.textSize = LabibaVAInternal.labibaVaTheme.botText.textSize.toFloat()
         }

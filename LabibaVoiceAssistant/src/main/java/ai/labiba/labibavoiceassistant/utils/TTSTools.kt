@@ -95,7 +95,8 @@ object TTSTools {
 
     private fun startNextAudio() {
         //remove completed audio from queue
-        audioQueue.poll()
+        val player = audioQueue.poll()
+        releasePlayer(player)
 
         //if there is another audio in the queue start it
         if (!audioQueue.isEmpty()) {
@@ -107,6 +108,7 @@ object TTSTools {
         if (audioQueue.isNotEmpty()) {
             audioQueue.forEach {
                 it.stop()
+                releasePlayer(it)
             }
 
             audioQueue.clear()
@@ -116,4 +118,10 @@ object TTSTools {
     fun isQueueEmpty() = audioQueue.isEmpty()
 
 
+    private fun releasePlayer(player:MediaPlayer?){
+        if(player?.isPlaying == true)
+            player.stop()
+        player?.reset()
+        player?.release()
+    }
 }
