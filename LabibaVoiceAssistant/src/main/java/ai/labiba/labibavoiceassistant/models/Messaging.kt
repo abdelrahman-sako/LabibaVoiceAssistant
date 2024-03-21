@@ -163,6 +163,7 @@ class Messaging {
 
 
         val referralObj = Request.Entry.Messaging.Referral(convertFlagMapToRefJson(refMap))
+        LabibaVAInternal.flags.clear()
 
 
         val messages = Request.Entry.Messaging(
@@ -186,6 +187,7 @@ class Messaging {
         refMap.put("GoogleServices", true)
 
         val referralObj = Request.Entry.Messaging.Referral(convertFlagMapToRefJson(refMap))
+        LabibaVAInternal.flags.clear()
 
         val messages = Request.Entry.Messaging(
             message = null,
@@ -223,6 +225,7 @@ class Messaging {
         refMap.put("GoogleServices", true)
 
         val referralObj = Request.Entry.Messaging.Referral(convertFlagMapToRefJson(refMap))
+        LabibaVAInternal.flags.clear()
 
         val messages = Request.Entry.Messaging(
             message = message,
@@ -259,6 +262,7 @@ class Messaging {
         refMap.put("GoogleServices", true)
 
         val referralObj = Request.Entry.Messaging.Referral(convertFlagMapToRefJson(refMap))
+        LabibaVAInternal.flags.clear()
 
         val messages = Request.Entry.Messaging(
             message = message,

@@ -53,11 +53,11 @@ import coil.decode.ImageDecoderDecoder
 import coil.load
 import coil.request.onAnimationEnd
 import coil.request.repeatCount
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.shape.ShapeAppearanceModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.LinkedList
 import java.util.Queue
@@ -112,11 +112,9 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
         setupUI()
         setupRecyclerView()
-        setupSuggestions()
         checkRequiredParameters()
         setupListeners()
         setupObservers()
-
 
     }
 
@@ -126,16 +124,18 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
         LabibaVAInternal.setupGeneralTheme(binding, this)
         LabibaVAInternal.setExoplayer(requireActivity())
 
-        if(LabibaVAInternal.fullScreen){
+        if (LabibaVAInternal.fullScreen) {
 
             //remove drag view
             binding.materialCardView.gone()
 
             //remove rounded top corners background
-            binding.labibaVaDialogConstraintLayout.background = ColorDrawable(Color.parseColor(LabibaVAInternal.labibaVaTheme.general.backgroundColor))
+            binding.labibaVaDialogConstraintLayout.background =
+                ColorDrawable(Color.parseColor(LabibaVAInternal.labibaVaTheme.general.backgroundColor))
 
             //set height to full screen
-            binding.labibaVaDialogConstraintLayout.layoutParams.height = Views.getScreenHeight(requireActivity())
+            binding.labibaVaDialogConstraintLayout.layoutParams.height =
+                Views.getScreenHeight(requireActivity())
 
             //disable swipe down
             (dialog as BottomSheetDialog).behavior.isDraggable = false
@@ -150,7 +150,6 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
             adapter = chatAdapter
         }
 
-
         chatAdapter.setCallbackInterface(
             LabibaChatCallbackHandler(
                 viewModel,
@@ -162,84 +161,94 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
     }
 
-    private fun setupSuggestions(){
-        //always remove all views before adding any, this fixes a bug where old choices would not be removed
-        binding.mainVaSuggestionChipGroup.removeAllViews()
-        val theme = LabibaVAInternal.labibaVaTheme.suggestions
+    private fun setupSuggestions() {
+        lifecycleScope.launch(Dispatchers.Main) {
+            delay(200)
 
-        if(theme.listOfSuggestions.isNullOrEmpty()){
-            binding.mainVaSuggestionChipGroup.gone()
-            return
-        }
+            //always remove all views before adding any, this fixes a bug where old choices would not be removed
+            binding.mainVaSuggestionChipGroup.removeAllViews()
+            val theme = LabibaVAInternal.labibaVaTheme.suggestions
 
-        binding.mainVaSuggestionChipGroup.chipSpacingHorizontal = theme.horizontalSpacing
-        binding.mainVaSuggestionChipGroup.chipSpacingVertical = theme.verticalSpacing
-
-
-        LabibaVAInternal.labibaVaTheme.suggestions.listOfSuggestions?.forEach {chipText ->
-            val chip = Chip(requireActivity())
-            chip.text = chipText
-
-            //required for vertical spacing to work
-            chip.setEnsureMinTouchTargetSize(false)
-
-            //apply theme
-            //text
-            chip.textSize = theme.textSize.toFloat()
-            chip.setTextColor(Color.parseColor(theme.textColor))
-
-            //background color
-            chip.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor(theme.backgroundColor))
-
-            //radius
-            chip.shapeAppearanceModel = ShapeAppearanceModel.Builder().apply {
-                setAllCornerSizes(theme.radius.toFloat())
-            }.build()
-
-            //stroke
-            chip.chipStrokeColor = ColorStateList.valueOf(Color.parseColor(theme.strokeColor))
-            chip.chipStrokeWidth = theme.strokeWidth.toFloat()
-
-
-            //animate chip
-            chip.alpha =0f
-            chip.scaleX =0f
-            chip.scaleY =0f
-
-            val startDelay = Random.nextLong(0,400)
-
-            chip.animate().alpha(1f).setDuration(600).setStartDelay(startDelay).start()
-            chip.animate().scaleX(1f).scaleY(1f).setDuration(400).setStartDelay(startDelay).setInterpolator(
-                OvershootInterpolator()
-            ).start()
-
-            //add chip to chipgroup
-            binding.mainVaSuggestionChipGroup.addView(chip)
-
-            //click listener
-            chip.setOnClickListener {
-
-                //stop and clear any audio playing/not played yet
-                TTSTools.stopAndClearAudio()
-
-                //stop message and tts requests
-                viewModel.stopRequests()
-
-                //clear any messages in the queue not shown yet
-                messagesQueue.clear()
-
-                chatAdapter.addUserText(chipText)
-
-                viewModel.requestMessage(
-                    MessageTypes.CHOICE.convertToModel(
-                        chipText,
-                        sharedUtils.getSenderId()
-                    )
-                )
-
+            if (LabibaVAInternal.suggestionList.isNullOrEmpty()) {
+                binding.mainVaSuggestionChipGroup.gone()
+                return@launch
             }
-        }
 
+            //scroll back to first item
+            binding.mainVaSuggestionHorizontalScollView.smoothScrollTo(0,0)
+
+            binding.mainVaSuggestionChipGroup.chipSpacingHorizontal = theme.horizontalSpacing
+            binding.mainVaSuggestionChipGroup.chipSpacingVertical = theme.verticalSpacing
+
+            LabibaVAInternal.suggestionList?.shuffled()?.forEach { chipText ->
+                val chip = Chip(requireActivity())
+                chip.text = chipText
+
+                //required for vertical spacing to work
+                chip.setEnsureMinTouchTargetSize(false)
+
+                //apply theme
+                //text
+                chip.textSize = theme.textSize.toFloat()
+                chip.setTextColor(Color.parseColor(theme.textColor))
+
+                //background color
+                chip.chipBackgroundColor =
+                    ColorStateList.valueOf(Color.parseColor(theme.backgroundColor))
+
+                //radius
+                chip.shapeAppearanceModel = ShapeAppearanceModel.Builder().apply {
+                    setAllCornerSizes(theme.radius.toFloat())
+                }.build()
+
+                //stroke
+                chip.chipStrokeColor =
+                    ColorStateList.valueOf(Color.parseColor(theme.strokeColor))
+                chip.chipStrokeWidth = theme.strokeWidth.toFloat()
+
+
+                //animate chip
+                chip.alpha = 0f
+                chip.scaleX = 0f
+                chip.scaleY = 0f
+
+                val startDelay = Random.nextLong(0, 400)
+
+                chip.animate().alpha(1f).setDuration(600).setStartDelay(startDelay).start()
+                chip.animate().scaleX(1f).scaleY(1f).setDuration(400).setStartDelay(startDelay)
+                    .setInterpolator(
+                        OvershootInterpolator()
+                    ).start()
+
+                //add chip to chipgroup
+                binding.mainVaSuggestionChipGroup.addView(chip)
+
+                //click listener
+                chip.setOnClickListener {
+
+                    //stop and clear any audio playing/not played yet
+                    TTSTools.stopAndClearAudio()
+
+                    //stop message and tts requests
+                    viewModel.stopRequests()
+
+                //clear any messages and TTS in the queue not shown yet
+                messagesQueue.clear()
+                mTTSQueue.clear()
+
+                    chatAdapter.addUserText(chipText)
+
+                    viewModel.requestMessage(
+                        MessageTypes.CHOICE.convertToModel(
+                            chipText,
+                            sharedUtils.getSenderId()
+                        )
+                    )
+
+                }
+            }
+
+        }
     }
 
     private fun checkRequiredParameters() {
@@ -277,8 +286,11 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                 //stop message and tts requests
                 viewModel.stopRequests()
 
-                //clear any messages in the queue not shown yet
+                //clear any messages and TTS in the queue not shown yet
                 messagesQueue.clear()
+                mTTSQueue.clear()
+
+
 
 
                 //initialize speech recognizer
@@ -350,6 +362,8 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
 
                                     chatAdapter.submitList(listOf(chatItem))
+
+                                    setupSuggestions()
 
                                 }
 

@@ -16,7 +16,6 @@ class LabibaVASuggestions {
     internal var horizontalSpacing = 15.toPx
     internal var verticalSpacing = 15.toPx
 
-    internal var listOfSuggestions:List<String>? =null
 
     class Builder {
         private var _textColor: String = LabibaVASuggestions().textColor
@@ -27,7 +26,6 @@ class LabibaVASuggestions {
         private var _radius: Int = LabibaVASuggestions().radius
         private var _horizontalSpacing: Int = LabibaVASuggestions().horizontalSpacing
         private var _verticalSpacing: Int = LabibaVASuggestions().verticalSpacing
-        private var _listOfSuggestions:List<String>? = LabibaVASuggestions().listOfSuggestions
 
         fun textColor(color: String) = apply { this._textColor = color }
         fun textSize(size: Int) = apply { this._textSize = size }
@@ -44,7 +42,6 @@ class LabibaVASuggestions {
 
         fun verticalSpacing(spacing: Int) = apply { this._verticalSpacing = spacing }
 
-        fun suggestionList(list:List<String>) = apply { this._listOfSuggestions = list }
 
         fun build() = LabibaVASuggestions().apply {
             textColor = _textColor
@@ -55,7 +52,6 @@ class LabibaVASuggestions {
             radius = _radius
             horizontalSpacing = _horizontalSpacing
             verticalSpacing = _verticalSpacing
-            listOfSuggestions = _listOfSuggestions
         }
     }
 

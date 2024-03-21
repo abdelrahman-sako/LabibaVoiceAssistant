@@ -88,14 +88,20 @@ object LabibaVA {
         LabibaVAInternal.addGifBackground(url,elevation,loop)
     }
 
+    fun addSuggestionList(list:List<String>){
+        LabibaVAInternal.suggestionList = list
+    }
+
+    fun setFlagMap(flagMap:Map<String,Any>){
+        LabibaVAInternal.flags = flagMap.toMutableMap()
+    }
+
     fun startConversation(
         supportFragmentManager: FragmentManager,
         language: String = Constants.languageName.value,
-        flag: Map<String,Any> = mapOf(),
         fullScreen:Boolean = false
     ) {
         setStartLanguage(language)
-        LabibaVAInternal.flags = flag.toMutableMap()
         LabibaVAInternal.fullScreen = fullScreen
 
         if (!urls.isBaseAdded())

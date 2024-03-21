@@ -28,10 +28,7 @@ internal object LabibaVAInternal {
     internal var exoPlayer: ExoPlayer? = null
     internal var flags:MutableMap<String,Any> = mutableMapOf()
     internal var fullScreen:Boolean = false
-
-
-
-
+    internal var suggestionList:List<String>? = null
 
 
 
