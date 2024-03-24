@@ -40,9 +40,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
-import android.widget.LinearLayout
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -52,9 +51,12 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import coil.request.onAnimationEnd
+import coil.request.onAnimationStart
 import coil.request.repeatCount
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
+import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.ShapeAppearanceModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -175,7 +177,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
             }
 
             //scroll back to first item
-            binding.mainVaSuggestionHorizontalScollView.smoothScrollTo(0,0)
+            binding.mainVaSuggestionHorizontalScollView.smoothScrollTo(0, 0)
 
             binding.mainVaSuggestionChipGroup.chipSpacingHorizontal = theme.horizontalSpacing
             binding.mainVaSuggestionChipGroup.chipSpacingVertical = theme.verticalSpacing
@@ -232,9 +234,9 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                     //stop message and tts requests
                     viewModel.stopRequests()
 
-                //clear any messages and TTS in the queue not shown yet
-                messagesQueue.clear()
-                mTTSQueue.clear()
+                    //clear any messages and TTS in the queue not shown yet
+                    messagesQueue.clear()
+                    mTTSQueue.clear()
 
                     chatAdapter.addUserText(chipText)
 
@@ -289,8 +291,6 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                 //clear any messages and TTS in the queue not shown yet
                 messagesQueue.clear()
                 mTTSQueue.clear()
-
-
 
 
                 //initialize speech recognizer
@@ -435,8 +435,10 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                                 val chatItem = messagesQueue.poll()
 
                                 if (chatItem != null) {
-                                    Tools.addChatItemToAdapterBasedOnType(chatAdapter, chatItem){
-                                        binding.mainVaRecyclerView.smoothScrollToPosition(chatAdapter.itemCount - 1)
+                                    Tools.addChatItemToAdapterBasedOnType(chatAdapter, chatItem) {
+                                        binding.mainVaRecyclerView.smoothScrollToPosition(
+                                            chatAdapter.itemCount - 1
+                                        )
                                     }
                                 }
 
@@ -688,30 +690,50 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                 } else {
                     add(GifDecoder.Factory())
                 }
-            }
-            .build()
+            }.build()
 
 
-        // match_parent on image views refuse to work, so it is set programmatically
-        binding.labibaVaGifShapeableImageView.layoutParams.apply {
+        //create image view
+        val imageView = ShapeableImageView(requireActivity())
+        imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+        imageView.shapeAppearanceModel = ShapeAppearanceModel
+            .builder().setTopLeftCorner(CornerFamily.ROUNDED, 30.toPx.toFloat())
+            .setTopRightCorner(CornerFamily.ROUNDED, 30.toPx.toFloat()).build()
+
+        //image view is hidden until gif is loaded
+        imageView.gone()
+        binding.labibaVaDialogConstraintLayout.addView(imageView)
+
+        imageView.layoutParams.apply {
             width = binding.dialogContainer.width
             height = binding.dialogContainer.height
         }
 
-        binding.labibaVaGifShapeableImageView.elevation = elevation
+        imageView.elevation = elevation
 
-        binding.labibaVaGifShapeableImageView.visible()
-        binding.labibaVaGifShapeableImageView.load(url, imageLoader) {
+        //load gif
+        imageView.load(url, imageLoader) {
             crossfade(true)
+
+            //show on load
+            listener(onSuccess = {_, _ ->
+                imageView.fadeInToVisible()
+            })
 
             if (!loop) {
                 repeatCount(0)
             }
 
             onAnimationEnd {
-                binding.labibaVaGifShapeableImageView.fadeOutToGone()
+                imageView.fadeOutToGone(){
+                    //remove image view after hiding it
+                    binding.labibaVaDialogConstraintLayout.removeView(imageView)
+                }
             }
+
         }
+
+
     }
 
 

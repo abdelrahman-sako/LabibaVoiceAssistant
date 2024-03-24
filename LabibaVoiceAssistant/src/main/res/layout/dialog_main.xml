@@ -17,17 +17,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!--   match_parent on image views refuse to work, so it is set programmatically   -->
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/labiba_va_gif_shapeable_image_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:visibility="gone"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay_card_top_corners_30dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@tools:sample/backgrounds/scenic" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/materialCardView"

@@ -40,7 +40,7 @@ fun View.disableClickForSomeTime(durationMs: Long = 200) {
 }
 
 //fade out view then set visibility to gone
-fun View.fadeOutToGone(durationMs: Long = 200, toAlpha: Float = 0f) {
+fun View.fadeOutToGone(durationMs: Long = 200, toAlpha: Float = 0f , onDone:(()->Unit)? = null) {
     if (this.visibility == View.GONE || this.visibility == View.INVISIBLE) {
         return
     }
@@ -50,6 +50,7 @@ fun View.fadeOutToGone(durationMs: Long = 200, toAlpha: Float = 0f) {
     CoroutineScope(Dispatchers.Main).launch {
         delay(durationMs)
         this@fadeOutToGone.visibility = View.GONE
+        onDone?.invoke()
     }
 
 }
