@@ -198,24 +198,32 @@ object Tools {
         return filteredList
     }
 
-    fun addChatItemToAdapterBasedOnType(adapter: ChatAdapter, item: Chat) {
+    fun addChatItemToAdapterBasedOnType(adapter: ChatAdapter, item: Chat, onSubmit: (() -> Unit)?= null) {
 
 
         when (item.type) {
             ChatType.CARDS -> {
-                adapter.addCards(item.cards ?: listOf())
+                adapter.addCards(item.cards ?: listOf()){
+                    onSubmit?.invoke()
+                }
             }
 
             ChatType.MEDIA_IMAGE -> {
-                adapter.addBotImage(item.mediaUrl ?: "")
+                adapter.addBotImage(item.mediaUrl ?: ""){
+                    onSubmit?.invoke()
+                }
             }
 
             ChatType.MEDIA_VIDEO -> {
-                adapter.addVideo(item.mediaUrl ?: "")
+                adapter.addVideo(item.mediaUrl ?: ""){
+                    onSubmit?.invoke()
+                }
             }
 
             ChatType.MEDIA_AUDIO -> {
-                adapter.addAudio(item.mediaUrl ?: "")
+                adapter.addAudio(item.mediaUrl ?: ""){
+                    onSubmit?.invoke()
+                }
             }
 
             ChatType.CREATE_POST -> {
@@ -224,11 +232,15 @@ object Tools {
             }
 
             ChatType.BOT_TEXT ->{
-                adapter.addBotText(item.text ?: "")
+                adapter.addBotText(item.text ?: ""){
+                    onSubmit?.invoke()
+                }
             }
 
             else -> {
-                adapter.submitList(listOf(item))
+                adapter.submitList(listOf(item)){
+                    onSubmit?.invoke()
+                }
             }
         }
     }

@@ -435,7 +435,9 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                                 val chatItem = messagesQueue.poll()
 
                                 if (chatItem != null) {
-                                    Tools.addChatItemToAdapterBasedOnType(chatAdapter, chatItem)
+                                    Tools.addChatItemToAdapterBasedOnType(chatAdapter, chatItem){
+                                        binding.mainVaRecyclerView.smoothScrollToPosition(chatAdapter.itemCount - 1)
+                                    }
                                 }
 
                                 //auto listening

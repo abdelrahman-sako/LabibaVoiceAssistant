@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/item_custom_view_constraint_layout"
+    android:animateLayoutChanges="true"
     >
 
     <!--  View is added programmatically  -->

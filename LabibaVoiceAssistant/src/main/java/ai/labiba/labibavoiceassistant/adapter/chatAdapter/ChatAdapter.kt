@@ -286,11 +286,12 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
         }
     }
 
-    fun addBotText(message: String) {
+    fun addBotText(message: String, onListSubmitted: (() -> Unit)? = null) {
         val list = ArrayList(diff.currentList)
         list.add(Chat().setData(chatType = ChatType.BOT_TEXT, textMessage = message))
         diff.submitList(list) {
             listUpdatedListener?.invoke()
+            onListSubmitted?.invoke()
         }
     }
 
@@ -303,37 +304,41 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
     }
 
 
-    fun addCards(cardsList: List<Card>) {
+    fun addCards(cardsList: List<Card>, onListSubmitted: (() -> Unit)? = null) {
         val list = ArrayList(diff.currentList)
         list.add(Chat().setData(chatType = ChatType.CARDS, cards = cardsList))
 
 
         diff.submitList(list) {
             listUpdatedListener?.invoke()
+            onListSubmitted?.invoke()
         }
     }
 
-    fun addBotImage(url: String) {
+    fun addBotImage(url: String,onListSubmitted: (() -> Unit)? = null) {
         val list = ArrayList(diff.currentList)
         list.add(Chat().setData(chatType = ChatType.MEDIA_IMAGE, mediaUrl = url))
         diff.submitList(list) {
             listUpdatedListener?.invoke()
+            onListSubmitted?.invoke()
         }
     }
 
-    fun addVideo(url: String) {
+    fun addVideo(url: String, onListSubmitted: (() -> Unit)? = null) {
         val list = ArrayList(diff.currentList)
         list.add(Chat().setData(chatType = ChatType.MEDIA_VIDEO, mediaUrl = url))
         diff.submitList(list) {
             listUpdatedListener?.invoke()
+            onListSubmitted?.invoke()
         }
     }
 
-    fun addAudio(url: String) {
+    fun addAudio(url: String, onListSubmitted: (() -> Unit)? = null) {
         val list = ArrayList(diff.currentList)
         list.add(Chat().setData(chatType = ChatType.MEDIA_AUDIO, mediaUrl = url))
         diff.submitList(list) {
             listUpdatedListener?.invoke()
+            onListSubmitted?.invoke()
         }
     }
 
