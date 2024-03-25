@@ -44,6 +44,7 @@ import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -141,6 +142,10 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                 Color.parseColor(LabibaVAInternal.labibaVaTheme.general.backgroundColor),
                 PorterDuff.Mode.SRC
             )
+
+            //remove wave line top constraint
+            (binding.mainVaWaveLineView.layoutParams as ConstraintLayout.LayoutParams).topToBottom = -1
+            binding.mainVaWaveLineView.layoutParams.height = 80.toPx
 
             //set height to full screen
             binding.labibaVaDialogConstraintLayout.layoutParams.height =
