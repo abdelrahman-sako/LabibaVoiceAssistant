@@ -31,6 +31,8 @@ import ai.labiba.labibavoiceassistant.utils.ext.visible
 import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.ColorDrawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
@@ -134,6 +136,11 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
             //remove rounded top corners background
             binding.labibaVaDialogConstraintLayout.background =
                 ColorDrawable(Color.parseColor(LabibaVAInternal.labibaVaTheme.general.backgroundColor))
+
+            binding.labibaVaDialogConstraintLayout.background.colorFilter = PorterDuffColorFilter(
+                Color.parseColor(LabibaVAInternal.labibaVaTheme.general.backgroundColor),
+                PorterDuff.Mode.SRC
+            )
 
             //set height to full screen
             binding.labibaVaDialogConstraintLayout.layoutParams.height =
