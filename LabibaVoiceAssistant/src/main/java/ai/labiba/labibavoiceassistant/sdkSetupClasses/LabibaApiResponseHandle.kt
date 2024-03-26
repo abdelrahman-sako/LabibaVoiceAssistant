@@ -34,7 +34,7 @@ internal object LabibaApiResponseHandle {
                                 //deeplink items always have only one card and one button of type "create_post",
                                 if (attachmentMessage.payload.elements.getOrNull(0)?.buttons?.getOrNull(0)?.type == "create_post") {
                                     val payload =
-                                        attachmentMessage.payload.elements[0].buttons.get(0).payload
+                                        attachmentMessage.payload.elements[0].buttons?.get(0)?.payload
                                     try {
                                         //get type and data from payload json string
                                         val payloadJsonObject = JSONObject(payload ?: "")

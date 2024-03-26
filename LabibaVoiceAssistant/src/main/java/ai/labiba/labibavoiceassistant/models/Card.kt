@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class Card(
     @SerializedName("buttons")
-    val buttons: List<Button>,
+    val buttons: List<Button>?,
     @SerializedName("default_action")
     val defaultAction: Any,
     @SerializedName("image_url")

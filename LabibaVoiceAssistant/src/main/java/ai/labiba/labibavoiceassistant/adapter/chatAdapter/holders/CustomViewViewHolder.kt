@@ -11,13 +11,19 @@ class CustomViewViewHolder(private val itemView:View):ViewHolder(itemView){
     private val constraintLayout = itemView.findViewById<ConstraintLayout>(R.id.item_custom_view_constraint_layout)
 
     fun bind(item:Chat){
-        //always remove all views before adding any, this fixes a bug where old images would not be removed
-        constraintLayout.removeAllViews()
 
-        if(item.customView?.parent != null) {
-            (item.customView?.parent as ViewGroup).removeView(item.customView)
+        try {
+            //always remove all views before adding any, this fixes a bug where old images would not be removed
+            constraintLayout.removeAllViews()
+
+            if (item.customView?.parent != null) {
+                (item.customView?.parent as ViewGroup).removeView(item.customView)
+            }
+            (itemView as ViewGroup).addView(item.customView)
+
+        }catch (e:Exception){
+            e.printStackTrace()
         }
-        (itemView as ViewGroup).addView(item.customView)
     }
 
 }
