@@ -38,11 +38,13 @@ object LabibaVA {
             throw Exception("The passed recipient-Id cant be empty")
         }
 
+        val tempList = mutableListOf<Pair<String,LabibaLanguages>>()
         Constants.recipientIds.forEach {
             if (it.second == addedLanguage) {
-                Constants.recipientIds.remove(it)
+                tempList.add(it)
             }
         }
+        Constants.recipientIds.removeAll(tempList.toSet())
 
         Constants.recipientIds.add(Pair(id, addedLanguage))
     }
