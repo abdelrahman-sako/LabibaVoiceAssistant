@@ -59,7 +59,7 @@ object LabibaVA {
             ?: throw Exception("The passed start language name ($language) is not correct or the language is not supported, please use for example (Labiba.Russian) to pass the correct language name")
 
         Constants.languageName = startLanguage
-        Constants.voiceLanguage = startLanguage.getLanguageCode()
+        Constants.voiceLanguage = startLanguage.getSrCode()
     }
 
     fun setLabibaVaDataCallback(labibaVADataCallback: LabibaVaDataCallbackInterface) {

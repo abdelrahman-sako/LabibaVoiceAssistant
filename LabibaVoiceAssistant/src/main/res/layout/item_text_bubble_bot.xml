@@ -9,22 +9,46 @@
     android:layout_marginEnd="40dp"
     android:layout_marginTop="10dp">
 
-    <TextView
-        android:id="@+id/botTextView"
-        android:layout_width="0dp"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/labiba_va_bot_text_card_view"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical|start"
-        android:includeFontPadding="false"
-        android:minWidth="60dp"
-        android:minHeight="35dp"
-        android:paddingHorizontal="15dp"
-        android:paddingVertical="10dp"
-        android:textColor="@color/dark_knight"
-        android:textSize="34sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardBackgroundColor="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="What's the weather in Jerash" />
+        app:strokeWidth="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/botTextCardContentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/botTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|start"
+                android:includeFontPadding="false"
+                android:minWidth="60dp"
+                android:minHeight="35dp"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="10dp"
+                android:textAlignment="viewStart"
+                android:textColor="@color/dark_knight"
+                android:textSize="34sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="What's the weather in Jerash" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
