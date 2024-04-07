@@ -250,7 +250,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                     messagesQueue.clear()
                     mTTSQueue.clear()
 
-                    chatAdapter.addUserText(chipText)
+//                    chatAdapter.addUserText(chipText)
 
                     viewModel.requestMessage(
                         MessageTypes.CHOICE.convertToModel(
