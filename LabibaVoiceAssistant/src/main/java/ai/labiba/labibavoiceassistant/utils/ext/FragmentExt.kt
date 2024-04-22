@@ -16,6 +16,7 @@ fun Fragment.changeStatusBarColor(colorInHex: String?) {
         val wic = WindowInsetsControllerCompat(window, decorView)
         wic.isAppearanceLightStatusBars = true // true or false as desired.
 
+
         window.statusBarColor = Color.parseColor(colorInHex)
     } catch (e: Exception) {
         e.printStackTrace()
@@ -32,8 +33,9 @@ fun Fragment.getCurrentStatusBarColor(): String? {
         val wic = WindowInsetsControllerCompat(window, decorView)
         wic.isAppearanceLightStatusBars = true // true or false as desired.
 
-//         "#" + window.statusBarColor.toHexString(HexFormat.Default)
-        String.format("#%08X", (0xFFFFFF and window.statusBarColor))
+        // Convert the integer value to hexadecimal
+        return "#"+Integer.toHexString(window.statusBarColor)
+
     } catch (e: Exception) {
         e.printStackTrace()
         null
