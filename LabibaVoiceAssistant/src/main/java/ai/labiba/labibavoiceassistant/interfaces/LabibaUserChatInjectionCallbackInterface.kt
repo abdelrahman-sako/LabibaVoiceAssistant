@@ -14,4 +14,6 @@ interface LabibaUserChatInjectionCallbackInterface {
 
     fun addGifBackground(url:String,elevation:Float, loop:Boolean)
 
+    fun sendMessage(message: String, showMessageInChat:Boolean)
+
 }

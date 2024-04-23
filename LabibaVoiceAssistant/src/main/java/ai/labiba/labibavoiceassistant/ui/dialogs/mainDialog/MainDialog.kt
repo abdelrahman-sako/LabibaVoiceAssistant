@@ -748,5 +748,19 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
     }
 
+    override fun sendMessage(message: String, showMessageInChat: Boolean) {
+
+        if(showMessageInChat){
+            chatAdapter.addUserText(message)
+        }
+
+        viewModel.requestMessage(
+            MessageTypes.TEXT.convertToModel(
+                message,
+                sharedUtils.getSenderId()
+            )
+        )
+    }
+
 
 }

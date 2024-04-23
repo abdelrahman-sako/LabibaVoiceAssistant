@@ -109,5 +109,9 @@ internal object LabibaVAInternal {
         mLabibaUserInjectionCallback?.addGifBackground(url,elevation,loop)
     }
 
+    fun sendMessage(message: String, showMessageInChat:Boolean) {
+        mLabibaUserInjectionCallback?.sendMessage(message, showMessageInChat)
+    }
+
 
 }

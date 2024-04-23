@@ -90,6 +90,10 @@ object LabibaVA {
         LabibaVAInternal.addGifBackground(url,elevation,loop)
     }
 
+    fun sendMessage(message: String, showMessageInChat:Boolean = true){
+        LabibaVAInternal.sendMessage(message,showMessageInChat)
+    }
+
     fun addSuggestionList(list:List<String>){
         LabibaVAInternal.suggestionList = list
     }
