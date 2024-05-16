@@ -1,7 +1,6 @@
 package ai.labiba.labibavoiceassistant.sdkSetupClasses
 
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.LabibaVAUrls
-import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.LabibaVAVoice
 import ai.labiba.labibavoiceassistant.enums.LabibaLanguages
 import ai.labiba.labibavoiceassistant.interfaces.LabibaVaDataCallbackInterface
 import ai.labiba.labibavoiceassistant.other.Constants
@@ -20,10 +19,6 @@ object LabibaVA {
     const val Chinese = "CHINESE"
 
     var urls: LabibaVAUrls = LabibaVAUrls()
-    var voice: LabibaVAVoice = LabibaVAVoice()
-
-
-
 
     /**
      * Adding new bot id to start conversation on

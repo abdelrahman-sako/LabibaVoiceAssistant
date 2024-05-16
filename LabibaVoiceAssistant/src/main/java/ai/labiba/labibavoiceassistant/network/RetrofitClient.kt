@@ -57,9 +57,9 @@ object RetrofitClient {
         OkHttpClient
             .Builder()
             .addInterceptor(HttpLogging)
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(2, TimeUnit.MINUTES)
+            .writeTimeout(2, TimeUnit.MINUTES)
+            .readTimeout(2, TimeUnit.MINUTES)
             .build()
 
 }

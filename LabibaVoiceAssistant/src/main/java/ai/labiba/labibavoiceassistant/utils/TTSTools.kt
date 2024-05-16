@@ -1,7 +1,9 @@
 package ai.labiba.labibavoiceassistant.utils
 
+import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal
 import android.media.MediaDataSource
 import android.media.MediaPlayer
+import android.media.PlaybackParams
 import android.util.Base64
 import android.webkit.URLUtil
 import java.util.LinkedList
@@ -31,6 +33,12 @@ object TTSTools {
         try {
             if (URLUtil.isValidUrl(url)) {
                 mediaPlayer.setDataSource(url)
+
+                val params = PlaybackParams()
+                params.setSpeed(LabibaVAInternal.labibaVaTheme.voice.voiceSpeed)
+                mediaPlayer.playbackParams = params
+
+
                 mediaPlayer.prepareAsync()
             } else {  //base 64
                 val data: ByteArray = Base64.decode(url, Base64.DEFAULT)
