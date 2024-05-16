@@ -5,6 +5,7 @@ import ai.labiba.labibavoiceassistant.interfaces.LabibaChatAdapterCallbackInterf
 import ai.labiba.labibavoiceassistant.models.Chat
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal
 import ai.labiba.labibavoiceassistant.utils.ext.gone
+import ai.labiba.labibavoiceassistant.utils.ext.toPx
 import ai.labiba.labibavoiceassistant.utils.ext.visible
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -49,6 +50,10 @@ class ChoiceViewHolder(private val itemView:View,private val callback: LabibaCha
 
             //required for vertical spacing to work
             chip.setEnsureMinTouchTargetSize(false)
+
+            //bug fix for arabic
+            chip.setPadding(0, 0, 0, 1.toPx)
+
 
             //apply theme
             //text
