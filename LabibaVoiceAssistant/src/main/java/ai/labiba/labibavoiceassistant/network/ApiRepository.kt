@@ -10,6 +10,6 @@ class ApiRepository(private val apiInterface: LabibaApiRetrofitInterface) {
 
     suspend fun sendMessage(data: Messaging.Request) = apiInterface.message(data)
 
-    suspend fun getTextToSpeech(text:String,language: LabibaLanguages) = apiInterface.textToSpeech(text = text,LabibaVAInternal.labibaVaTheme.voice.getVoiceBasedOnLanguage(language),language.getTTsCode())
+    suspend fun getTextToSpeech(text:String,language: LabibaLanguages, isSSML:String = "false") = apiInterface.textToSpeech(text = text,LabibaVAInternal.labibaVaTheme.voice.getVoiceBasedOnLanguage(language),language.getTTsCode(),isSSML = isSSML)
 
 }

@@ -58,13 +58,14 @@ class MainDialogViewModel : ViewModel() {
         }
     }
 
-    fun requestTextToSpeech(text: String,language:LabibaLanguages) {
+    fun requestTextToSpeech(text: String,language:LabibaLanguages,ssml:Boolean = false) {
 
         mTTSJob = viewModelScope.launch(Dispatchers.IO) {
             _speechAudioLink.postValue(Resource.Loading())
 
             val e: String? = try {
-                val call = apiRepository.getTextToSpeech(text,language)
+
+                val call = apiRepository.getTextToSpeech(text,language,ssml.toString())
 
                 if (call.body() != null && call.isSuccessful) {
 

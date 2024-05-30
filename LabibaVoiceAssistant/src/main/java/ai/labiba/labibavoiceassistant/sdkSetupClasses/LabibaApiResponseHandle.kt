@@ -10,7 +10,7 @@ internal object LabibaApiResponseHandle {
     fun handleResponse(
         response: Messaging.Response,
         onComplete: (List<Chat>) -> Unit,
-        onSendVoice: ((String) -> Unit)
+        onSendVoice: ((String,Boolean) -> Unit)
     ) {
 
         val dataList: ArrayList<Chat> = arrayListOf()
@@ -165,15 +165,15 @@ internal object LabibaApiResponseHandle {
         onComplete.invoke(dataList)
     }
 
-    private fun handleTTSVoiceMessage(textMessage: String, onSendVoice: (String) -> Unit): String {
+    private fun handleTTSVoiceMessage(textMessage: String, onSendVoice: (String,Boolean) -> Unit): String {
         val messageSplitter = textMessage.split("@:@")
         var text = ""
 
         if (messageSplitter.size > 1) {
-            onSendVoice(messageSplitter[1])
-            text = messageSplitter[1]
+            onSendVoice(messageSplitter[1],true)
+            text = messageSplitter[0]
         } else {
-            onSendVoice(messageSplitter[0])
+            onSendVoice(messageSplitter[0],false)
             text = messageSplitter[0]
         }
 

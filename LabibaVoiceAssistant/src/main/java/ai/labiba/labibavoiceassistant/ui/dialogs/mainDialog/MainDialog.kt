@@ -90,7 +90,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
     //Queues
     private val messagesQueue: Queue<Chat> = LinkedList()
-    private val mTTSQueue: Queue<Pair<String, LabibaLanguages>> = LinkedList()
+    private val mTTSQueue: Queue<Triple<String, LabibaLanguages,Boolean>> = LinkedList()
 
     //-------------------------
     private var errorRetryCount = 0
@@ -385,7 +385,8 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                                     val tts = mTTSQueue.poll()
                                     viewModel.requestTextToSpeech(
                                         tts?.first ?: "",
-                                        tts?.second ?: LabibaLanguages.ENGLISH
+                                        tts?.second ?: LabibaLanguages.ENGLISH,
+                                        tts?.third ?: false
                                     )
 
                                 }
@@ -396,7 +397,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                             }
 
 
-                        }, {
+                        }, { text, ssml->
                             //fill the TTS queue
                             //This call back is called as the response is being handled
                             //when response is handled onComplete is called and TTS is requested using the queue
@@ -404,11 +405,11 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                             val language =
                                 if (LabibaVAInternal.labibaVaTheme.themeSettings.autoDetectLanguage) {
                                     //change TTS and speechRecognition language if returned language was changed
-                                    Tools.detectLabibaLanguageConstant(it ?: "", false)
+                                    Tools.detectLabibaLanguageConstant(text ?: "", false)
                                 } else {
                                     null
                                 }
-                            mTTSQueue.offer(Pair(it, language ?: LabibaLanguages.ENGLISH))
+                            mTTSQueue.offer(Triple(text, language ?: LabibaLanguages.ENGLISH,ssml))
 
                             //change speechRecognition language to last TTS detected language
                             Constants.voiceLanguage = language?.getSrCode() ?: "en-US"
@@ -468,7 +469,8 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                                     val tts = mTTSQueue.poll()
                                     viewModel.requestTextToSpeech(
                                         tts?.first ?: "",
-                                        tts?.second ?: LabibaLanguages.ENGLISH
+                                        tts?.second ?: LabibaLanguages.ENGLISH,
+                                        tts?.third?:false
                                     )
                                 }
                             }
@@ -481,7 +483,8 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                             val tts = mTTSQueue.poll()
                             viewModel.requestTextToSpeech(
                                 tts?.first ?: "",
-                                tts?.second ?: LabibaLanguages.ENGLISH
+                                tts?.second ?: LabibaLanguages.ENGLISH,
+                                tts?.third?:false
                             )
                         }
 
