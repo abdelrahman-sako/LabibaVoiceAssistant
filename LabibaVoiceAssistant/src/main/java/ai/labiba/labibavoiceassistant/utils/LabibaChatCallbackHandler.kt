@@ -43,6 +43,17 @@ internal class LabibaChatCallbackHandler(
         )
     }
 
+    override fun onCardClick(payload: String) {
+        TTSTools.stopAndClearAudio()
+
+        viewModel.requestMessage(
+            MessageTypes.CARD.convertToModel(
+                payload,
+                sharedUtils.getSenderId()
+            )
+        )
+    }
+
     override fun onVideoClick(url: String) {
         val view = activity.layoutInflater.inflate(R.layout.dialog_video, null)
         val player = LabibaVAInternal.exoPlayer

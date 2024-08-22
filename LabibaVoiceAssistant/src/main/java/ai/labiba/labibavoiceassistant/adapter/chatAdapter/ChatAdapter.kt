@@ -105,7 +105,7 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
             }
 
             R.layout.item_card_list_horizontal -> {
-                CardListViewHolder(view)
+                CardListViewHolder(view,callback)
             }
 
             else -> {

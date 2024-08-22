@@ -1,6 +1,7 @@
 package ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders
 
 import ai.labiba.labibavoiceassistant.R
+import ai.labiba.labibavoiceassistant.interfaces.LabibaChatAdapterCallbackInterface
 import ai.labiba.labibavoiceassistant.models.Chat
 import android.view.View
 import android.widget.ImageView
@@ -11,6 +12,7 @@ import coil.load
 
 class CardListViewHolder(
     private val itemView: View,
+    private val callback: LabibaChatAdapterCallbackInterface?
 ) : ViewHolder(itemView) {
     private val container =
         itemView.findViewById<LinearLayout>(R.id.item_card_list_horizontal_scroll_view_content_linear_layout)
@@ -18,6 +20,7 @@ class CardListViewHolder(
     fun onBind(item: Chat) {
         val type = item.cards?.first()?.title?.split(":")?.get(0)
 
+        container.removeAllViews()
 
         when(type?.lowercase()){
             "carousel"->{
@@ -49,8 +52,11 @@ class CardListViewHolder(
             cardTitle.text = titleText
             cardSubtitle.text = card.subtitle
 
-            container.addView(view)
+            view.setOnClickListener {
+                callback?.onCardClick(card.buttons?.first()?.payload?:card.title)
+            }
 
+            container.addView(view)
 
         }
 
