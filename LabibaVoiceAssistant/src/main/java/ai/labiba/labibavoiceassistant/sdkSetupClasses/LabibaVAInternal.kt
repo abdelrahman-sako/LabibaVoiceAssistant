@@ -2,6 +2,7 @@ package ai.labiba.labibavoiceassistant.sdkSetupClasses
 
 import ai.labiba.labibavoiceassistant.interfaces.LabibaUserChatInjectionCallbackInterface
 import ai.labiba.labibavoiceassistant.databinding.DialogMainBinding
+import ai.labiba.labibavoiceassistant.enums.LabibaLanguages
 import ai.labiba.labibavoiceassistant.interfaces.LabibaVaDataCallbackInterface
 import ai.labiba.labibavoiceassistant.other.Constants
 import ai.labiba.labibavoiceassistant.utils.ext.changeStatusBarColor
@@ -113,5 +114,8 @@ internal object LabibaVAInternal {
         mLabibaUserInjectionCallback?.sendMessage(message, showMessageInChat)
     }
 
+    fun addTTSMessageListToQueue(messageList: List<String>, language: LabibaLanguages){
+        mLabibaUserInjectionCallback?.addTTSMessageListToQueue(messageList, language)
+    }
 
 }

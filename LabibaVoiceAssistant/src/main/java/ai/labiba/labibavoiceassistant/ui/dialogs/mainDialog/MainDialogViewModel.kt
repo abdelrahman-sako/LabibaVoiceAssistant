@@ -9,6 +9,7 @@ import ai.labiba.labibavoiceassistant.network.RetrofitClient
 import ai.labiba.labibavoiceassistant.other.Constants
 import ai.labiba.labibavoiceassistant.utils.apiHandleResponse.HandleResults
 import ai.labiba.labibavoiceassistant.utils.apiHandleResponse.Resource
+import ai.labiba.labibavoiceassistant.utils.ext.logd
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -58,6 +59,7 @@ class MainDialogViewModel : ViewModel() {
         }
     }
 
+    @Synchronized
     fun requestTextToSpeech(text: String,language:LabibaLanguages,ssml:Boolean = false) {
 
         mTTSJob = viewModelScope.launch(Dispatchers.IO) {

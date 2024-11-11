@@ -89,6 +89,10 @@ object LabibaVA {
         LabibaVAInternal.sendMessage(message,showMessageInChat)
     }
 
+    fun addTTSMessageListToQueue(messageList:List<String>,language:LabibaLanguages){
+        LabibaVAInternal.addTTSMessageListToQueue(messageList,language)
+    }
+
     fun addSuggestionList(list:List<String>){
         LabibaVAInternal.suggestionList = list
     }

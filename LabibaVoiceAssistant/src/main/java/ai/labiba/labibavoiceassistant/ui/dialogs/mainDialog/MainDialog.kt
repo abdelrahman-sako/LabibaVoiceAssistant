@@ -24,6 +24,7 @@ import ai.labiba.labibavoiceassistant.utils.ext.changeStatusBarColor
 import ai.labiba.labibavoiceassistant.utils.ext.fadeInToVisible
 import ai.labiba.labibavoiceassistant.utils.ext.fadeOutToGone
 import ai.labiba.labibavoiceassistant.utils.ext.gone
+import ai.labiba.labibavoiceassistant.utils.ext.logd
 import ai.labiba.labibavoiceassistant.utils.ext.scaleDownToInvisible
 import ai.labiba.labibavoiceassistant.utils.ext.scaleUpToVisible
 import ai.labiba.labibavoiceassistant.utils.ext.toPx
@@ -763,6 +764,22 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                 sharedUtils.getSenderId()
             )
         )
+    }
+
+    override fun addTTSMessageListToQueue(messageList: List<String>, language: LabibaLanguages) {
+
+        messageList.forEach {
+            mTTSQueue.offer(Triple(it,language,false))
+        }
+
+        if(TTSTools.isQueueEmpty()) {
+            val tts = mTTSQueue.poll()
+            viewModel.requestTextToSpeech(
+                tts?.first ?: "",
+                tts?.second ?: LabibaLanguages.ENGLISH,
+                tts?.third ?: false
+            )
+        }
     }
 
 
