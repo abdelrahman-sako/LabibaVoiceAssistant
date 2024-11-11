@@ -17,5 +17,5 @@ interface LabibaUserChatInjectionCallbackInterface {
 
     fun sendMessage(message: String, showMessageInChat:Boolean)
 
-    fun addTTSMessageListToQueue(messageList: List<String>, language: LabibaLanguages)
+    fun addTTSMessageListToQueue(messageList: List<String>, language: LabibaLanguages,skipDuplicate:Boolean = false)
 }

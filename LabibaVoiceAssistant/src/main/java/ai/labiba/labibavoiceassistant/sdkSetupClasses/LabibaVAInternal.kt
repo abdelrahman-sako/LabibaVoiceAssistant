@@ -114,8 +114,8 @@ internal object LabibaVAInternal {
         mLabibaUserInjectionCallback?.sendMessage(message, showMessageInChat)
     }
 
-    fun addTTSMessageListToQueue(messageList: List<String>, language: LabibaLanguages){
-        mLabibaUserInjectionCallback?.addTTSMessageListToQueue(messageList, language)
+    fun addTTSMessageListToQueue(messageList: List<String>, language: LabibaLanguages,skipDuplicate:Boolean = false){
+        mLabibaUserInjectionCallback?.addTTSMessageListToQueue(messageList, language,skipDuplicate)
     }
 
 }

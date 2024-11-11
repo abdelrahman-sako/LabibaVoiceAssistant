@@ -59,7 +59,6 @@ class MainDialogViewModel : ViewModel() {
         }
     }
 
-    @Synchronized
     fun requestTextToSpeech(text: String,language:LabibaLanguages,ssml:Boolean = false) {
 
         mTTSJob = viewModelScope.launch(Dispatchers.IO) {

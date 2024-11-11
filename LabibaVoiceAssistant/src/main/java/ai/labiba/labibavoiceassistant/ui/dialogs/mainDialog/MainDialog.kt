@@ -766,11 +766,24 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
         )
     }
 
-    override fun addTTSMessageListToQueue(messageList: List<String>, language: LabibaLanguages) {
+    override fun addTTSMessageListToQueue(messageList: List<String>, language: LabibaLanguages,skipDuplicate:Boolean) {
 
-        messageList.forEach {
-            mTTSQueue.offer(Triple(it,language,false))
+
+        if(skipDuplicate){
+            val filteredMessageList = messageList.filterNot { message ->
+                mTTSQueue.any { it.first == message }
+            }
+
+            filteredMessageList.forEach {
+                mTTSQueue.offer(Triple(it,language,false))
+            }
+        }else{
+            messageList.forEach {
+                mTTSQueue.offer(Triple(it,language,false))
+            }
         }
+
+
 
         if(TTSTools.isQueueEmpty()) {
             val tts = mTTSQueue.poll()
