@@ -89,8 +89,12 @@ object LabibaVA {
         LabibaVAInternal.sendMessage(message,showMessageInChat)
     }
 
-    fun addTTSMessageListToQueue(messageList:List<String>,language:LabibaLanguages){
-        LabibaVAInternal.addTTSMessageListToQueue(messageList,language)
+    fun addTTSMessageListToQueue(messageList:List<String>,language:String){
+        val languageEnum = LabibaLanguages.fromString(language)
+            ?: throw Exception("The passed start language name ($language) is not correct or the language is not supported, please use for example (LabibaVA.Russian) to pass the correct language name")
+
+
+        LabibaVAInternal.addTTSMessageListToQueue(messageList,languageEnum)
     }
 
     fun addSuggestionList(list:List<String>){
