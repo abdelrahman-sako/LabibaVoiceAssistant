@@ -24,11 +24,9 @@ import ai.labiba.labibavoiceassistant.utils.ext.changeStatusBarColor
 import ai.labiba.labibavoiceassistant.utils.ext.fadeInToVisible
 import ai.labiba.labibavoiceassistant.utils.ext.fadeOutToGone
 import ai.labiba.labibavoiceassistant.utils.ext.gone
-import ai.labiba.labibavoiceassistant.utils.ext.logd
 import ai.labiba.labibavoiceassistant.utils.ext.scaleDownToInvisible
 import ai.labiba.labibavoiceassistant.utils.ext.scaleUpToVisible
 import ai.labiba.labibavoiceassistant.utils.ext.toPx
-import ai.labiba.labibavoiceassistant.utils.ext.visible
 import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -55,7 +53,6 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import coil.request.onAnimationEnd
-import coil.request.onAnimationStart
 import coil.request.repeatCount
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
@@ -91,7 +88,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
     //Queues
     private val messagesQueue: Queue<Chat> = LinkedList()
-    private val mTTSQueue: Queue<Triple<String, LabibaLanguages,Boolean>> = LinkedList()
+    private val mTTSQueue: Queue<Triple<String, LabibaLanguages, Boolean>> = LinkedList()
 
     //-------------------------
     private var errorRetryCount = 0
@@ -145,7 +142,8 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
             )
 
             //remove wave line top constraint
-            (binding.mainVaWaveLineView.layoutParams as ConstraintLayout.LayoutParams).topToBottom = -1
+            (binding.mainVaWaveLineView.layoutParams as ConstraintLayout.LayoutParams).topToBottom =
+                -1
             binding.mainVaWaveLineView.layoutParams.height = 80.toPx
 
             //set height to full screen
@@ -398,7 +396,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                             }
 
 
-                        }, { text, ssml->
+                        }, { text, ssml ->
                             //fill the TTS queue
                             //This call back is called as the response is being handled
                             //when response is handled onComplete is called and TTS is requested using the queue
@@ -410,7 +408,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                                 } else {
                                     null
                                 }
-                            mTTSQueue.offer(Triple(text, language ?: LabibaLanguages.ENGLISH,ssml))
+                            mTTSQueue.offer(Triple(text, language ?: LabibaLanguages.ENGLISH, ssml))
 
                             //change speechRecognition language to last TTS detected language
                             Constants.voiceLanguage = language?.getSrCode() ?: "en-US"
@@ -457,7 +455,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                                 }
 
                                 //auto listening
-                                if (TTSTools.isQueueEmpty() && LabibaVAInternal.labibaVaTheme.themeSettings.isAutoListening) {
+                                if (TTSTools.isQueueEmpty() && mTTSQueue.isEmpty() && LabibaVAInternal.labibaVaTheme.themeSettings.isAutoListening) {
                                     if (_binding != null) {
                                         binding.mainVaMicBtnImageFilterView.performClick()
                                     }
@@ -471,7 +469,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                                     viewModel.requestTextToSpeech(
                                         tts?.first ?: "",
                                         tts?.second ?: LabibaLanguages.ENGLISH,
-                                        tts?.third?:false
+                                        tts?.third ?: false
                                     )
                                 }
                             }
@@ -485,7 +483,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                             viewModel.requestTextToSpeech(
                                 tts?.first ?: "",
                                 tts?.second ?: LabibaLanguages.ENGLISH,
-                                tts?.third?:false
+                                tts?.third ?: false
                             )
                         }
 
@@ -732,7 +730,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
             crossfade(true)
 
             //show on load
-            listener(onSuccess = {_, _ ->
+            listener(onSuccess = { _, _ ->
                 imageView.fadeInToVisible()
             })
 
@@ -741,7 +739,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
             }
 
             onAnimationEnd {
-                imageView.fadeOutToGone(){
+                imageView.fadeOutToGone() {
                     //remove image view after hiding it
                     binding.labibaVaDialogConstraintLayout.removeView(imageView)
                 }
@@ -754,7 +752,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
     override fun sendMessage(message: String, showMessageInChat: Boolean) {
 
-        if(showMessageInChat){
+        if (showMessageInChat) {
             chatAdapter.addUserText(message)
         }
 
@@ -766,26 +764,30 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
         )
     }
 
-    override fun addTTSMessageListToQueue(messageList: List<String>, language: LabibaLanguages,skipDuplicate:Boolean) {
+    override fun addTTSMessageListToQueue(
+        messageList: List<String>,
+        language: LabibaLanguages,
+        skipDuplicate: Boolean
+    ) {
 
 
-        if(skipDuplicate){
+        if (skipDuplicate) {
             val filteredMessageList = messageList.filterNot { message ->
                 mTTSQueue.any { it.first == message }
             }
 
             filteredMessageList.forEach {
-                mTTSQueue.offer(Triple(it,language,false))
+                mTTSQueue.offer(Triple(it, language, false))
             }
-        }else{
+        } else {
             messageList.forEach {
-                mTTSQueue.offer(Triple(it,language,false))
+                mTTSQueue.offer(Triple(it, language, false))
             }
         }
 
 
 
-        if(TTSTools.isQueueEmpty()) {
+        if (TTSTools.isQueueEmpty()) {
             val tts = mTTSQueue.poll()
             viewModel.requestTextToSpeech(
                 tts?.first ?: "",
