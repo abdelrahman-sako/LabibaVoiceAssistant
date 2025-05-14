@@ -4,6 +4,7 @@ import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.LabibaVAVoice
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.LabibaVACards
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.LabibaVAChoices
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.LabibaVAGeneral
+import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.LabibaVAMoreDialogTheme
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.LabibaVASuggestions
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.LabibaVAText
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.LabibaVAThemeSettings
@@ -31,5 +32,7 @@ class LabibaVATheme {
     var audio = LabibaVaAudio()
 
     var suggestions = LabibaVASuggestions()
+
+    var moreDialog = LabibaVAMoreDialogTheme()
 
 }

@@ -23,6 +23,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
@@ -173,6 +175,14 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
     }
 
     override fun getItemCount() = diff.currentList.size
+
+    fun getItemAt(position: Int) = diff.currentList[position]
+
+     fun getLastBotResponse():Chat?{
+        return diff.currentList.findLast {
+            it.type == ChatType.BOT_TEXT
+        }
+    }
 
     //*************
     // Set Full list

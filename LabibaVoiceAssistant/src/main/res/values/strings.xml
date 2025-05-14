@@ -6,4 +6,11 @@
     <string name="microphone_permission_rationale">In order to use this service, the app needs the microphone permission.</string>
     <string name="microphone_permission_warning">This feature requires microphone permission.</string>
     <string name="recipient_id_not_added">Please add at least one recipient id to start conversation on</string>
+    <string name="report_submitted_successfully">Report submitted successfully</string>
+    <string name="something_went_wrong_please_try_again_later">Something went wrong, please try again later</string>
+    <string name="report">Report</string>
+    <string name="would_you_like_to_report_this_following_response">Would you like to report this following response?</string>
+    <string name="reason">Reason</string>
+    <string name="submit">Submit</string>
+    <string name="required">Required</string>
 </resources>

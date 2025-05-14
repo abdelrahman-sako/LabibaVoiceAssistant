@@ -4,7 +4,19 @@ import ai.labiba.labibavoiceassistant.enums.ChatType
 import android.graphics.Bitmap
 import android.view.View
 
-data class Chat(var type: ChatType = ChatType.NON, var timestamp: Long = System.currentTimeMillis()+ (1..99999999).random(), var text: String? = null,  var choices: List<Choice>? = null,  var cards: List<Card>? = null,  var mediaUrl: String? = null,  var image: Bitmap? = null,var scaleDown:Boolean = false,var customView: View? = null ,var createPostPayload:Pair<String,String>? =null) {
+
+data class Chat(
+    var type: ChatType = ChatType.NON,
+    var timestamp: Long = System.currentTimeMillis() + (1..99999999).random(),
+    var text: String? = null,
+    var choices: List<Choice>? = null,
+    var cards: List<Card>? = null,
+    var mediaUrl: String? = null,
+    var image: Bitmap? = null,
+    var scaleDown: Boolean = false,
+    var customView: View? = null,
+    var createPostPayload: Pair<String, String>? = null
+) {
 
 //    val type get() = _type
 //    val timestamp get() = _timestamp
@@ -23,7 +35,7 @@ data class Chat(var type: ChatType = ChatType.NON, var timestamp: Long = System.
         time: Long? = null,
         image: Bitmap? = null,
         customView: View? = null,
-        createPostPayload:Pair<String,String>? =null
+        createPostPayload: Pair<String, String>? = null
     ): Chat {
         this.type = chatType
         this.timestamp = time ?: System.currentTimeMillis()

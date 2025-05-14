@@ -12,6 +12,7 @@ import ai.labiba.labibavoiceassistant.other.Constants
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaApiResponseHandle.handleResponse
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal.exoPlayer
+import ai.labiba.labibavoiceassistant.ui.dialogs.moreDialog.MoreDialog
 import ai.labiba.labibavoiceassistant.utils.LabibaChatCallbackHandler
 import ai.labiba.labibavoiceassistant.utils.MicPermissionFragment
 import ai.labiba.labibavoiceassistant.utils.SharedUtils
@@ -24,6 +25,7 @@ import ai.labiba.labibavoiceassistant.utils.ext.changeStatusBarColor
 import ai.labiba.labibavoiceassistant.utils.ext.fadeInToVisible
 import ai.labiba.labibavoiceassistant.utils.ext.fadeOutToGone
 import ai.labiba.labibavoiceassistant.utils.ext.gone
+import ai.labiba.labibavoiceassistant.utils.ext.logd
 import ai.labiba.labibavoiceassistant.utils.ext.scaleDownToInvisible
 import ai.labiba.labibavoiceassistant.utils.ext.scaleUpToVisible
 import ai.labiba.labibavoiceassistant.utils.ext.toPx
@@ -321,6 +323,12 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                 }
 
             }
+        }
+
+
+        //more image view
+        binding.mainVaMoreImageFilterView.setOnClickListener {
+            MoreDialog.newInstance(chatAdapter.getLastBotResponse()?.text).show(requireActivity().supportFragmentManager,"MoreDialog")
         }
 
     }

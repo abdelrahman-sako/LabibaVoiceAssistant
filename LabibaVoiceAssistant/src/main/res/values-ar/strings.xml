@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="camera">كاميرا</string>
+    <string name="gallery">معرض الصور</string>
+    <string name="microphone_permission">إذن الميكروفون</string>
+    <string name="microphone_permission_rationale">من أجل استخدام هذه الخدمة، يحتاج التطبيق إلى إذن الميكروفون.</string>
+    <string name="microphone_permission_warning">تتطلب هذه الميزة إذن الميكروفون.</string>
+    <string name="recipient_id_not_added">يُرجى إضافة (recipientID) واحد على الأقل لبدء المحادثة</string>
+    <string name="report_submitted_successfully">تم تقديم التقرير بنجاح</string>
+    <string name="something_went_wrong_please_try_again_later">حدث خطأ ما، يرجى المحاولة مرة أخرى لاحقاً</string>
+    <string name="report">تقرير</string>
+    <string name="would_you_like_to_report_this_following_response">هل ترغب في الإبلاغ عن هذا الرد التالي؟</string>
+    <string name="reason">السبب</string>
+    <string name="submit">إرسال</string>
+    <string name="required">مطلوب</string>
+</resources>

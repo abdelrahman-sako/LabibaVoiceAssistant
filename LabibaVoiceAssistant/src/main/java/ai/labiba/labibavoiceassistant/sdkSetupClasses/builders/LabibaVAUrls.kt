@@ -3,6 +3,7 @@ package ai.labiba.labibavoiceassistant.sdkSetupClasses.builders
 class LabibaVAUrls {
     internal var generalBaseUrl: String = ""
     internal var voiceBaseUrl: String = ""
+    internal var reportURL:String = ""
     internal var messagingPath: String = ""
     internal var voicePath: String = ""
     internal var loggingPath: String = ""
@@ -14,6 +15,7 @@ class LabibaVAUrls {
     class Builder {
         private var _generalBaseUrl: String = LabibaVAUrls().generalBaseUrl
         private var _voiceBaseUrl: String = LabibaVAUrls().voiceBaseUrl
+        private var _reportUrl: String = LabibaVAUrls().reportURL
         private var _messagingPath: String = LabibaVAUrls().messagingPath
         private var _voicePath: String = LabibaVAUrls().voicePath
         private var _loggingPath: String = LabibaVAUrls().loggingPath
@@ -23,6 +25,8 @@ class LabibaVAUrls {
         fun generalBaseUrl(base: String) = apply { _generalBaseUrl = base }
 
         fun voiceBaseUrl(base: String) = apply { _voiceBaseUrl = base }
+
+        fun reportUrl(url: String) = apply { _reportUrl = url }
 
         fun messagingPath(path: String) = apply { _messagingPath = path }
 
@@ -37,6 +41,7 @@ class LabibaVAUrls {
         fun build() = LabibaVAUrls().apply {
             generalBaseUrl = _generalBaseUrl
             voiceBaseUrl = _voiceBaseUrl
+            reportURL = _reportUrl
             messagingPath = _messagingPath
             voicePath = _voicePath
             loggingPath = _loggingPath

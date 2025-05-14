@@ -2,6 +2,8 @@ package ai.labiba.labibavoiceassistant.network
 
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVA
 import ai.labiba.labibavoiceassistant.models.Messaging
+import ai.labiba.labibavoiceassistant.models.ReportRequestBody
+import ai.labiba.labibavoiceassistant.models.ReportResponse
 import ai.labiba.labibavoiceassistant.models.TTSResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -30,6 +32,12 @@ interface LabibaApiRetrofitInterface {
         @Field("isSSML") isSSML:String = "false",
         @Field("clientid") id:String = "0",
     ): Response<TTSResponse>
+
+    @POST
+    suspend fun reportBotResponse(
+        @Url url: String = LabibaVA.urls.reportURL,
+        @Body requestBody :ReportRequestBody
+    ): Response<ReportResponse>
 
 
 }
