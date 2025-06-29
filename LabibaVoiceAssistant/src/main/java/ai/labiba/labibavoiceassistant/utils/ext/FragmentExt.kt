@@ -8,7 +8,14 @@ import androidx.fragment.app.Fragment
 
 fun Fragment.changeStatusBarColor(colorInHex: String?) {
 
+    colorInHex?.logd("LabibaVA status Color")
     try {
+        val colorHex = if(colorInHex == "#0"){
+            "#00000000"
+        }else{
+            colorInHex
+        }
+
         val window: Window = requireActivity().window
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
 
@@ -17,7 +24,7 @@ fun Fragment.changeStatusBarColor(colorInHex: String?) {
         wic.isAppearanceLightStatusBars = true // true or false as desired.
 
 
-        window.statusBarColor = Color.parseColor(colorInHex)
+        window.statusBarColor = Color.parseColor(colorHex)
     } catch (e: Exception) {
         e.printStackTrace()
     }

@@ -8,6 +8,7 @@ import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.BotVideoViewHo
 import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.CardListViewHolder
 import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.ChoiceViewHolder
 import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.CustomViewViewHolder
+import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.EditTextViewHolder
 import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.TypingViewHolder
 import ai.labiba.labibavoiceassistant.adapter.chatAdapter.holders.UserTextViewHolder
 import ai.labiba.labibavoiceassistant.enums.ChatType
@@ -23,13 +24,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.util.UUID
 
 class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var callback: LabibaChatAdapterCallbackInterface? = null
+
     fun setCallbackInterface(callback: LabibaChatAdapterCallbackInterface) {
         this.callback = callback
     }
@@ -63,6 +63,7 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
             ChatType.MEDIA_IMAGE -> R.layout.item_image
             ChatType.MEDIA_VIDEO -> R.layout.item_video
             ChatType.MEDIA_AUDIO -> R.layout.item_audio
+            ChatType.INPUT -> R.layout.item_edit_text
             ChatType.CUSTOM -> R.layout.item_va_custom_view
             else -> 0
         }
@@ -108,6 +109,10 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
 
             R.layout.item_card_list_horizontal -> {
                 CardListViewHolder(view,callback)
+            }
+
+            R.layout.item_edit_text->{
+                EditTextViewHolder(view,callback)
             }
 
             else -> {
@@ -164,6 +169,11 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
             }
 
             is ChoiceViewHolder -> {
+                holder.onBind(item)
+            }
+
+            is EditTextViewHolder -> {
+                Animations.animateView(holder.itemView, R.anim.layout_animation_fall_down)
                 holder.onBind(item)
             }
 

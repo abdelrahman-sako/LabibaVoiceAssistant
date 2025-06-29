@@ -291,6 +291,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
                 //show wave line and hide mic button
                 binding.mainVaMicBtnImageFilterView.scaleDownToInvisible()
+                binding.mainVaMoreImageFilterView.scaleDownToInvisible()
                 binding.mainVaWaveLineView.startAnim()
                 binding.mainVaWaveLineView.fadeInToVisible()
 
@@ -580,6 +581,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
         //hide wave line view and show mic button
         binding.mainVaWaveLineView.gone()
         binding.mainVaMicBtnImageFilterView.scaleUpToVisible(500)
+        binding.mainVaMoreImageFilterView.scaleUpToVisible(500)
 
 
     }
@@ -676,6 +678,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
             binding.mainVaWaveLineView.stopAnim()
             binding.mainVaWaveLineView.gone()
             binding.mainVaMicBtnImageFilterView.scaleUpToVisible()
+            binding.mainVaMoreImageFilterView.scaleUpToVisible()
         }
 
         super.onError(p0)

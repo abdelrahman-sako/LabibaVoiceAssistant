@@ -12,4 +12,6 @@ interface LabibaChatAdapterCallbackInterface {
     fun onVideoClick(url:String)
 
     fun onAudioStateChange(view:LinearProgressIndicator,durationTextView:TextView,isPlaying:Boolean = false)
+
+    fun onInputTextDone(text:String)
 }

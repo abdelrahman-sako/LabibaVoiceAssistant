@@ -11,5 +11,6 @@ enum class ChatType {
     MEDIA_AUDIO,
     CUSTOM,
     CREATE_POST,
+    INPUT,
     NON
 }

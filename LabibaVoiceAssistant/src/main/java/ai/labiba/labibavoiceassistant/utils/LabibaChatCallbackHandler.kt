@@ -1,8 +1,8 @@
 package ai.labiba.labibavoiceassistant.utils
 
 import ai.labiba.labibavoiceassistant.R
-import ai.labiba.labibavoiceassistant.interfaces.LabibaChatAdapterCallbackInterface
 import ai.labiba.labibavoiceassistant.enums.MessageTypes
+import ai.labiba.labibavoiceassistant.interfaces.LabibaChatAdapterCallbackInterface
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal
 import ai.labiba.labibavoiceassistant.ui.dialogs.mainDialog.MainDialogViewModel
 import android.app.Activity
@@ -30,7 +30,7 @@ internal class LabibaChatCallbackHandler(
     private val sharedUtils: SharedUtils = SharedUtils(activity)
 ) : LabibaChatAdapterCallbackInterface {
 
-    private var audioJob:Job?=null
+    private var audioJob: Job? = null
 
     override fun onChoicesClick(name: String) {
         TTSTools.stopAndClearAudio()
@@ -92,30 +92,45 @@ internal class LabibaChatCallbackHandler(
         isPlaying: Boolean
     ) {
 
-        if(isPlaying){
+        if (isPlaying) {
             audioJob = lifecycleScope.launch {
                 while (true) {
                     delay(500)
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        view.setProgress((LabibaVAInternal.exoPlayer?.currentPosition)?.toInt()?:0,true)
-                    }else{
-                        view.progress = (LabibaVAInternal.exoPlayer?.currentPosition)?.toInt()?:0
+                        view.setProgress(
+                            (LabibaVAInternal.exoPlayer?.currentPosition)?.toInt() ?: 0, true
+                        )
+                    } else {
+                        view.progress = (LabibaVAInternal.exoPlayer?.currentPosition)?.toInt() ?: 0
                     }
 
-                    durationTextView.text =  formatMilliseconds((LabibaVAInternal.exoPlayer?.currentPosition?:0) /2 ) + " / " + formatMilliseconds((LabibaVAInternal.exoPlayer?.duration?:0)/2)
+                    durationTextView.text = formatMilliseconds(
+                        (LabibaVAInternal.exoPlayer?.currentPosition ?: 0) / 2
+                    ) + " / " + formatMilliseconds((LabibaVAInternal.exoPlayer?.duration ?: 0) / 2)
 
-                    view.max = LabibaVAInternal.exoPlayer?.duration?.toInt()?:0
+                    view.max = LabibaVAInternal.exoPlayer?.duration?.toInt() ?: 0
 
-                    if(view.progress == view.max){
+                    if (view.progress == view.max) {
                         return@launch
                     }
                 }
             }
-        }else{
+        } else {
             audioJob?.cancel()
         }
 
+    }
+
+    override fun onInputTextDone(text: String) {
+        TTSTools.stopAndClearAudio()
+
+        viewModel.requestMessage(
+            MessageTypes.TEXT.convertToModel(
+                text,
+                sharedUtils.getSenderId()
+            )
+        )
     }
 
     private fun formatMilliseconds(milliseconds: Long): String {
