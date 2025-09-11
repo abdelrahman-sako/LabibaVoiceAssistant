@@ -63,7 +63,10 @@ class MainDialogViewModel : ViewModel() {
 
         mTTSJob = viewModelScope.launch(Dispatchers.IO) {
             _speechAudioLink.postValue(Resource.Loading())
-
+            if(text == "\n"){
+                _speechAudioLink.postValue(Resource.Success<TTSResponse>(TTSResponse("success","https://voice.labibabot.com/files/5d8e0bdd-7123-467d-89d4-3afc5e5c127e.mp3")))
+                return@launch
+            }
             val e: String? = try {
 
                 val call = apiRepository.getTextToSpeech(text,language,ssml.toString())
