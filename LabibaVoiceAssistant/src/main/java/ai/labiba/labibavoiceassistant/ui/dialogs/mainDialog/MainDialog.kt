@@ -486,6 +486,18 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                     }
 
                     is Resource.Error -> {
+
+                        //on audio play error show next text in chat
+                        val chatItem = messagesQueue.poll()
+
+                        if (chatItem != null) {
+                            Tools.addChatItemToAdapterBasedOnType(chatAdapter, chatItem) {
+                                binding.mainVaRecyclerView.smoothScrollToPosition(
+                                    chatAdapter.itemCount - 1
+                                )
+                            }
+                        }
+
                         //request the next TTS audio from the queue
                         if (mTTSQueue.peek() != null) {
                             val tts = mTTSQueue.poll()

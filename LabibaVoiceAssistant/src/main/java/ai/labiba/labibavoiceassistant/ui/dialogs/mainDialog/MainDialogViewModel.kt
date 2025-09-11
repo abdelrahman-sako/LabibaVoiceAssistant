@@ -60,33 +60,26 @@ class MainDialogViewModel : ViewModel() {
     }
 
     fun requestTextToSpeech(text: String,language:LabibaLanguages,ssml:Boolean = false) {
-
         mTTSJob = viewModelScope.launch(Dispatchers.IO) {
             _speechAudioLink.postValue(Resource.Loading())
-            if(text == "\n"){
-                _speechAudioLink.postValue(Resource.Success<TTSResponse>(TTSResponse("success","https://voice.labibabot.com/files/5d8e0bdd-7123-467d-89d4-3afc5e5c127e.mp3")))
-                return@launch
-            }
-            val e: String? = try {
 
+            try {
                 val call = apiRepository.getTextToSpeech(text,language,ssml.toString())
 
-                if (call.body() != null && call.isSuccessful) {
+                if (call.body() != null && call.isSuccessful && call.body()?.status != "error") {
 
                     _speechAudioLink.postValue(
                         HandleResults<TTSResponse>().handle(call)
                     )
                 } else {
-                    call.message()
+                    _speechAudioLink.postValue(Resource.Error(call.message()))
                 }
 
 
-                return@launch
             } catch (e: Exception) {
                 e.printStackTrace()
-                e.message
+                _speechAudioLink.postValue(Resource.Error(e.message?:""))
             }
-            _speechAudioLink.postValue(Resource.Error(e ?: ""))
         }
     }
 
