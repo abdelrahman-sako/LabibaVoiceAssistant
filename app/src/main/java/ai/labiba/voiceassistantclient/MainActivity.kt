@@ -18,12 +18,12 @@ class MainActivity : AppCompatActivity() {
 
 
         //add recipient id
-        LabibaVA.addRecipientId("00000000-0000-0000-0000-0000000000000", LabibaVA.English)
+        LabibaVA.addRecipientId(BuildConfig.BOT_ID, LabibaVA.English)
 
         //add urls
-        LabibaVA.urls = LabibaVAUrls.Builder().generalBaseUrl("https://example.com")
-            .voiceBaseUrl("https://example.com")
-            .messagingPath("/example").voicePath("/example")
+        LabibaVA.urls = LabibaVAUrls.Builder().generalBaseUrl(BuildConfig.BASE_URL)
+            .voiceBaseUrl(BuildConfig.VOICE_BASE_URL)
+            .messagingPath(BuildConfig.MESSAGING_PATH).voicePath(BuildConfig.VOICE_PATH)
             .build()
 
 

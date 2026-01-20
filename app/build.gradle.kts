@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -16,6 +18,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BASE_URL", "${gradleLocalProperties(rootDir).getProperty("BASE_URL")}")
+        buildConfigField("String", "VOICE_BASE_URL", "${gradleLocalProperties(rootDir).getProperty("VOICE_BASE_URL")}")
+        buildConfigField("String", "MESSAGING_PATH", "${gradleLocalProperties(rootDir).getProperty("MESSAGING_PATH")}")
+        buildConfigField("String", "VOICE_PATH", "${gradleLocalProperties(rootDir).getProperty("VOICE_PATH")}")
+        buildConfigField("String", "BOT_ID", "${gradleLocalProperties(rootDir).getProperty("BOT_ID")}")
     }
 
     buildTypes {
@@ -35,6 +43,8 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    android.buildFeatures.buildConfig = true
 }
 
 dependencies {
