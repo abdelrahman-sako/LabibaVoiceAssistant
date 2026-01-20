@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 
 fun Fragment.changeStatusBarColor(colorInHex: String?) {
 
-    colorInHex?.logd("LabibaVA status Color")
     try {
         val colorHex = if(colorInHex == "#0"){
             "#00000000"

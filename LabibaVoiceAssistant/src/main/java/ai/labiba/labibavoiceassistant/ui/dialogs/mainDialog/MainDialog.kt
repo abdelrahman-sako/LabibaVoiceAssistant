@@ -631,54 +631,6 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
 
     override fun onError(p0: Int) {
-
-
-//        var Error = ""
-//        val language = Constants.startLanguageName
-//
-//        when (p0) {
-//            SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> Error =
-//                LabibaSRErrors.ERROR_NETWORK_TIMEOUT.getMessage(language)
-//
-//            SpeechRecognizer.ERROR_NETWORK -> Error =
-//                LabibaSRErrors.ERROR_NETWORK.getMessage(language)
-//
-//            SpeechRecognizer.ERROR_AUDIO -> Error = LabibaSRErrors.ERROR_AUDIO.getMessage(language)
-//            SpeechRecognizer.ERROR_SERVER -> Error =
-//                LabibaSRErrors.ERROR_SERVER.getMessage(language)
-//
-//            SpeechRecognizer.ERROR_CLIENT -> Error =
-//                LabibaSRErrors.ERROR_CLIENT.getMessage(language)
-//
-//            SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> Error =
-//                LabibaSRErrors.ERROR_SPEECH_TIMEOUT.getMessage(language)
-//
-//            SpeechRecognizer.ERROR_NO_MATCH -> Error =
-//                LabibaSRErrors.ERROR_NO_MATCH.getMessage(language)
-//
-//            SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> Error =
-//                LabibaSRErrors.ERROR_RECOGNIZER_BUSY.getMessage(language)
-//
-//            SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> Error =
-//                LabibaSRErrors.ERROR_INSUFFICIENT_PERMISSIONS.getMessage(language)
-//
-//            SpeechRecognizer.ERROR_TOO_MANY_REQUESTS -> Error =
-//                LabibaSRErrors.ERROR_TOO_MANY_REQUESTS.getMessage(language)
-//
-//            SpeechRecognizer.ERROR_SERVER_DISCONNECTED -> Error =
-//                LabibaSRErrors.ERROR_SERVER_DISCONNECTED.getMessage(language)
-//
-//            SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED -> Error =
-//                LabibaSRErrors.ERROR_LANGUAGE_NOT_SUPPORTED.getMessage(language)
-//
-//            SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE -> Error =
-//                LabibaSRErrors.ERROR_LANGUAGE_UNAVAILABLE.getMessage(language)
-//
-//            SpeechRecognizer.ERROR_CANNOT_CHECK_SUPPORT -> Error =
-//                LabibaSRErrors.ERROR_CANNOT_CHECK_SUPPORT.getMessage(language)
-//        }
-
-
         //retry speech recognition three times if error occurs
         if (errorRetryCount <= 1) {
             //re-start speech recognition process
@@ -689,6 +641,9 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
             binding.mainVaWaveLineView.stopAnim()
             binding.mainVaWaveLineView.gone()
+
+            speechRecognizer?.stopListening()
+
             binding.mainVaMicBtnImageFilterView.scaleUpToVisible()
             binding.mainVaMoreImageFilterView.scaleUpToVisible()
         }

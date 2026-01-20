@@ -100,10 +100,7 @@ fun View.scaleDownToInvisible(durationMs: Long = 200){
         return
     }
 
-    this.animate().alpha(0f).scaleY(0f).scaleX(0f).duration = durationMs
-
-    CoroutineScope(Dispatchers.Main).launch {
-        delay(durationMs)
+    this.animate().alpha(0f).scaleY(0f).scaleX(0f).setDuration(durationMs).withEndAction {
         this@scaleDownToInvisible.visibility = View.INVISIBLE
     }
 }
