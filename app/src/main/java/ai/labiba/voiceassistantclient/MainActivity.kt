@@ -5,8 +5,10 @@ import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVA
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVATheme
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.LabibaVAUrls
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.LabibaVAGeneral
+import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.LabibaVAMoreDialogTheme
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.LabibaVAText
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.LabibaVAThemeSettings
+import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.MoreButtonPosition
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
@@ -46,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         //text theme
         theme.botText = LabibaVAText.Builder().textColor("#66000000").build()
         theme.userText = LabibaVAText.Builder().textColor("#101a28").build()
+        theme.moreDialog = LabibaVAMoreDialogTheme.Builder().setMoreButtonPosition(MoreButtonPosition.TOP_END).build()
 
 
         //set theme

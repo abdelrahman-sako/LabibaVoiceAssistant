@@ -12,6 +12,8 @@ import ai.labiba.labibavoiceassistant.other.Constants
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaApiResponseHandle.handleResponse
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal.exoPlayer
+import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.LabibaVAMoreDialogTheme
+import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.MoreButtonPosition
 import ai.labiba.labibavoiceassistant.ui.dialogs.moreDialog.MoreDialog
 import ai.labiba.labibavoiceassistant.utils.LabibaChatCallbackHandler
 import ai.labiba.labibavoiceassistant.utils.MicPermissionFragment
@@ -25,7 +27,6 @@ import ai.labiba.labibavoiceassistant.utils.ext.changeStatusBarColor
 import ai.labiba.labibavoiceassistant.utils.ext.fadeInToVisible
 import ai.labiba.labibavoiceassistant.utils.ext.fadeOutToGone
 import ai.labiba.labibavoiceassistant.utils.ext.gone
-import ai.labiba.labibavoiceassistant.utils.ext.logd
 import ai.labiba.labibavoiceassistant.utils.ext.scaleDownToInvisible
 import ai.labiba.labibavoiceassistant.utils.ext.scaleUpToVisible
 import ai.labiba.labibavoiceassistant.utils.ext.toPx
@@ -46,6 +47,7 @@ import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -157,6 +159,28 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
         }
 
+
+        //more button position
+        if (LabibaVAInternal.labibaVaTheme.moreDialog.moreButtonPosition == MoreButtonPosition.TOP_END) {
+            val constraintSet = ConstraintSet();
+            constraintSet.clone(binding.labibaVaDialogConstraintLayout)
+            constraintSet.connect(
+                R.id.main_va_more_image_filter_view,
+                ConstraintSet.TOP,
+                R.id.labiba_va_dialog_constraintLayout,
+                ConstraintSet.TOP,
+                0
+            )
+            constraintSet.connect(
+                R.id.main_va_more_image_filter_view,
+                ConstraintSet.END,
+                R.id.labiba_va_dialog_constraintLayout,
+                ConstraintSet.END,
+                0
+            )
+            constraintSet.clear(R.id.main_va_more_image_filter_view, ConstraintSet.BOTTOM)
+            constraintSet.applyTo(binding.labibaVaDialogConstraintLayout)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -329,7 +353,8 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
         //more image view
         binding.mainVaMoreImageFilterView.setOnClickListener {
-            MoreDialog.newInstance(chatAdapter.getLastBotResponse()?.text).show(requireActivity().supportFragmentManager,"MoreDialog")
+            MoreDialog.newInstance(chatAdapter.getLastBotResponse()?.text)
+                .show(requireActivity().supportFragmentManager, "MoreDialog")
         }
 
     }
