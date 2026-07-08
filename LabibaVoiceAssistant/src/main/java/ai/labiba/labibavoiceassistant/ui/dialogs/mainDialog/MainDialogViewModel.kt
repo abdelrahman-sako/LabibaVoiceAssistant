@@ -17,17 +17,18 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainDialogViewModel : ViewModel() {
     private val apiRepository = ApiRepository(RetrofitClient.getApiInterface())
 
-    private val _messaging = MutableLiveData<Resource<Messaging.Response>>()
-    val messaging: LiveData<Resource<Messaging.Response>>
+    private val _messaging = MutableLiveData<Resource<Messaging.Response>?>()
+    val messaging: LiveData<Resource<Messaging.Response>?>
         get() = _messaging
 
-    private val _speechAudioLink = MutableLiveData<Resource<TTSResponse>>()
-    val speechAudioLink: LiveData<Resource<TTSResponse>>
+    private val _speechAudioLink = MutableLiveData<Resource<TTSResponse>?>()
+    val speechAudioLink: LiveData<Resource<TTSResponse>?>
         get() = _speechAudioLink
 
     private var mTTSJob: Job? = null
@@ -45,6 +46,10 @@ class MainDialogViewModel : ViewModel() {
                     _messaging.postValue(
                         HandleResults<Messaging.Response>().handle(call)
                     )
+
+
+                    delay(300)
+                    _messaging.postValue(null)
 
                 } else {
                     call.message()
@@ -71,6 +76,10 @@ class MainDialogViewModel : ViewModel() {
                     _speechAudioLink.postValue(
                         HandleResults<TTSResponse>().handle(call)
                     )
+
+                    delay(300)
+                    _speechAudioLink.postValue(null)
+
                 } else {
                     _speechAudioLink.postValue(Resource.Error(call.message()))
                 }
