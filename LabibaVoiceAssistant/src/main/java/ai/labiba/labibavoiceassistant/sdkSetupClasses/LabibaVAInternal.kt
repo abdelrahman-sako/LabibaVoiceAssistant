@@ -16,6 +16,7 @@ import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.speech.RecognizerIntent
 import android.view.View
+import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
 import androidx.media3.exoplayer.ExoPlayer
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -64,21 +65,22 @@ internal object LabibaVAInternal {
 
         //background color
         binding.labibaVaDialogConstraintLayout.background.colorFilter = PorterDuffColorFilter(
-            Color.parseColor(labibaVaTheme.general.backgroundColor),
+            labibaVaTheme.general.backgroundColor.toColorInt(),
             PorterDuff.Mode.SRC
         )
-        binding.mainVaWaveLineView.setBackGroundColor((Color.parseColor(labibaVaTheme.general.backgroundColor)))
+        binding.mainVaWaveLineView.setBackGroundColor((labibaVaTheme.general.backgroundColor.toColorInt()))
 
         //wave view color
-        binding.mainVaWaveLineView.setLineColor(Color.parseColor(labibaVaTheme.general.wavesColor))
+        binding.mainVaWaveLineView.setLineColor(labibaVaTheme.general.wavesColor.toColorInt())
 
         //mic icon and background color
         binding.mainVaMicBtnImageFilterView.imageTintList = ColorStateList.valueOf(
-            Color.parseColor(
-                labibaVaTheme.general.micIconColor
-            )
+            labibaVaTheme.general.micIconColor.toColorInt()
         )
-        binding.mainVaMicBtnImageFilterView.setBackgroundColor(Color.parseColor(labibaVaTheme.general.micBackgroundColor))
+        binding.mainVaMicBtnImageFilterView.setBackgroundColor(labibaVaTheme.general.micBackgroundColor.toColorInt())
+
+        //more menu button icon
+        binding.mainVaMoreImageFilterView.setColorFilter(labibaVaTheme.general.moreMenuButtonColor.toColorInt())
 
     }
 

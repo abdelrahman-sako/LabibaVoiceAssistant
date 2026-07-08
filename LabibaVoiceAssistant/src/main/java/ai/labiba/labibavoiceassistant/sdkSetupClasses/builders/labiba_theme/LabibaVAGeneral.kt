@@ -9,6 +9,7 @@ class LabibaVAGeneral {
     internal var micIconColor: String = "#ffffff"
     internal var micBackgroundColor: String = "#000000"
     internal var typingIndicatorColor:String = "#101a28"
+    internal var moreMenuButtonColor: String = "#000000"
 
     class Builder {
         private var _statusBarColor: String? = LabibaVAGeneral().statusBarColor
@@ -18,6 +19,7 @@ class LabibaVAGeneral {
         private var _micIconColor: String = LabibaVAGeneral().micIconColor
         private var _micBackgroundColor: String = LabibaVAGeneral().micBackgroundColor
         private var _typingIndicatorColor: String = LabibaVAGeneral().typingIndicatorColor
+        private var _moreMenuButtonColor: String = LabibaVAGeneral().moreMenuButtonColor
 
 
         fun setStatusBarColor(color: String) = apply { _statusBarColor = color }
@@ -34,6 +36,8 @@ class LabibaVAGeneral {
 
         fun setTypingIndicatorColor(color: String) = apply { _typingIndicatorColor = color }
 
+        fun setMoreMenuButtonColor(color: String) = apply { _moreMenuButtonColor = color }
+
         fun build() = LabibaVAGeneral().apply {
             statusBarColor = _statusBarColor
             backgroundColor = _backgroundColor
@@ -42,6 +46,7 @@ class LabibaVAGeneral {
             micIconColor = _micIconColor
             micBackgroundColor = _micBackgroundColor
             typingIndicatorColor = _typingIndicatorColor
+            moreMenuButtonColor = _moreMenuButtonColor
         }
     }
 }
