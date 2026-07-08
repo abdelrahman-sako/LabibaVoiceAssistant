@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         //text theme
         theme.botText = LabibaVAText.Builder().textColor("#66000000").build()
         theme.userText = LabibaVAText.Builder().textColor("#101a28").build()
-        theme.moreDialog = LabibaVAMoreDialogTheme.Builder().setMoreButtonPosition(MoreButtonPosition.TOP_END).build()
+        theme.moreDialog = LabibaVAMoreDialogTheme.Builder().setMoreButtonPosition(MoreButtonPosition.DEFAULT).build()
 
 
         //set theme
