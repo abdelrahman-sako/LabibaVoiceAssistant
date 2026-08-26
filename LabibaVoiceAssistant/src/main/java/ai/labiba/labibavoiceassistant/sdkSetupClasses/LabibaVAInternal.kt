@@ -10,7 +10,6 @@ import ai.labiba.labibavoiceassistant.utils.ext.getCurrentStatusBarColor
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Build
@@ -79,8 +78,8 @@ internal object LabibaVAInternal {
         )
         binding.mainVaMicBtnImageFilterView.setBackgroundColor(labibaVaTheme.general.micBackgroundColor.toColorInt())
 
-        //more menu button icon
-        binding.mainVaMoreImageFilterView.setColorFilter(labibaVaTheme.general.moreMenuButtonColor.toColorInt())
+        //report menu button icon
+        binding.mainVaReportImageFilterView.setColorFilter(labibaVaTheme.general.reportMenuButtonColor.toColorInt())
 
     }
 

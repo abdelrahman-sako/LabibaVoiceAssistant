@@ -12,9 +12,8 @@ import ai.labiba.labibavoiceassistant.other.Constants
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaApiResponseHandle.handleResponse
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal
 import ai.labiba.labibavoiceassistant.sdkSetupClasses.LabibaVAInternal.exoPlayer
-import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.LabibaVAMoreDialogTheme
-import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.MoreButtonPosition
-import ai.labiba.labibavoiceassistant.ui.dialogs.moreDialog.MoreDialog
+import ai.labiba.labibavoiceassistant.sdkSetupClasses.builders.labiba_theme.ReportButtonPosition
+import ai.labiba.labibavoiceassistant.ui.dialogs.reportDialog.ReportDialog
 import ai.labiba.labibavoiceassistant.utils.LabibaChatCallbackHandler
 import ai.labiba.labibavoiceassistant.utils.MicPermissionFragment
 import ai.labiba.labibavoiceassistant.utils.SharedUtils
@@ -35,7 +34,6 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.graphics.drawable.ColorDrawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.speech.SpeechRecognizer
@@ -69,6 +67,9 @@ import kotlinx.coroutines.launch
 import java.util.LinkedList
 import java.util.Queue
 import kotlin.random.Random
+import androidx.core.graphics.toColorInt
+import androidx.core.graphics.drawable.toDrawable
+import kotlin.time.Duration.Companion.milliseconds
 
 
 class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
@@ -138,10 +139,10 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
             //remove rounded top corners background
             binding.labibaVaDialogConstraintLayout.background =
-                ColorDrawable(Color.parseColor(LabibaVAInternal.labibaVaTheme.general.backgroundColor))
+                LabibaVAInternal.labibaVaTheme.general.backgroundColor.toColorInt().toDrawable()
 
             binding.labibaVaDialogConstraintLayout.background.colorFilter = PorterDuffColorFilter(
-                Color.parseColor(LabibaVAInternal.labibaVaTheme.general.backgroundColor),
+                LabibaVAInternal.labibaVaTheme.general.backgroundColor.toColorInt(),
                 PorterDuff.Mode.SRC
             )
 
@@ -160,25 +161,25 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
         }
 
 
-        //more button position
-        if (LabibaVAInternal.labibaVaTheme.moreDialog.moreButtonPosition == MoreButtonPosition.TOP_END) {
+        //report button position
+        if (LabibaVAInternal.labibaVaTheme.moreDialog.reportButtonPosition == ReportButtonPosition.TOP_END) {
             val constraintSet = ConstraintSet();
             constraintSet.clone(binding.labibaVaDialogConstraintLayout)
             constraintSet.connect(
-                R.id.main_va_more_image_filter_view,
+                R.id.main_va_report_image_filter_view,
                 ConstraintSet.TOP,
                 R.id.labiba_va_dialog_constraintLayout,
                 ConstraintSet.TOP,
                 0
             )
             constraintSet.connect(
-                R.id.main_va_more_image_filter_view,
+                R.id.main_va_report_image_filter_view,
                 ConstraintSet.END,
                 R.id.labiba_va_dialog_constraintLayout,
                 ConstraintSet.END,
                 0
             )
-            constraintSet.clear(R.id.main_va_more_image_filter_view, ConstraintSet.BOTTOM)
+            constraintSet.clear(R.id.main_va_report_image_filter_view, ConstraintSet.BOTTOM)
             constraintSet.applyTo(binding.labibaVaDialogConstraintLayout)
         }
     }
@@ -202,7 +203,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
     private fun setupSuggestions() {
         lifecycleScope.launch(Dispatchers.Main) {
-            delay(200)
+            delay(200.milliseconds)
 
             //always remove all views before adding any, this fixes a bug where old choices would not be removed
             binding.mainVaSuggestionChipGroup.removeAllViews()
@@ -229,11 +230,11 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                 //apply theme
                 //text
                 chip.textSize = theme.textSize.toFloat()
-                chip.setTextColor(Color.parseColor(theme.textColor))
+                chip.setTextColor(theme.textColor.toColorInt())
 
                 //background color
                 chip.chipBackgroundColor =
-                    ColorStateList.valueOf(Color.parseColor(theme.backgroundColor))
+                    ColorStateList.valueOf(theme.backgroundColor.toColorInt())
 
                 //radius
                 chip.shapeAppearanceModel = ShapeAppearanceModel.Builder().apply {
@@ -242,8 +243,8 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
                 //stroke
                 chip.chipStrokeColor =
-                    ColorStateList.valueOf(Color.parseColor(theme.strokeColor))
-                chip.chipStrokeWidth = theme.strokeWidth.toFloat()
+                    ColorStateList.valueOf(theme.strokeColor.toColorInt())
+                chip.chipStrokeWidth = theme.strokeWidth
 
 
                 //animate chip
@@ -315,7 +316,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
                 //show wave line and hide mic button
                 binding.mainVaMicBtnImageFilterView.scaleDownToInvisible()
-                binding.mainVaMoreImageFilterView.scaleDownToInvisible()
+                binding.mainVaReportImageFilterView.scaleDownToInvisible()
                 binding.mainVaWaveLineView.startAnim()
                 binding.mainVaWaveLineView.fadeInToVisible()
 
@@ -351,10 +352,10 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
         }
 
 
-        //more image view
-        binding.mainVaMoreImageFilterView.setOnClickListener {
-            MoreDialog.newInstance(chatAdapter.getLastBotResponse()?.text)
-                .show(requireActivity().supportFragmentManager, "MoreDialog")
+        //report image view
+        binding.mainVaReportImageFilterView.setOnClickListener {
+            ReportDialog.newInstance(chatAdapter.getLastBotResponse()?.text)
+                .show(requireActivity().supportFragmentManager, "ReportDialog")
         }
 
     }
@@ -370,7 +371,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
 
                 when (resource) {
                     is Resource.Loading -> {
-                        chatAdapter.cleanList() {
+                        chatAdapter.cleanList {
                             chatAdapter.addTyping()
                         }
                         Log.d("RequestLog", "Request loading: ")
@@ -438,7 +439,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
                             val language =
                                 if (LabibaVAInternal.labibaVaTheme.themeSettings.autoDetectLanguage) {
                                     //change TTS and speechRecognition language if returned language was changed
-                                    Tools.detectLabibaLanguageConstant(text ?: "", false)
+                                    Tools.detectLabibaLanguageConstant(text, false)
                                 } else {
                                     null
                                 }
@@ -618,7 +619,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
         //hide wave line view and show mic button
         binding.mainVaWaveLineView.gone()
         binding.mainVaMicBtnImageFilterView.scaleUpToVisible(500)
-        binding.mainVaMoreImageFilterView.scaleUpToVisible(500)
+        binding.mainVaReportImageFilterView.scaleUpToVisible(500)
 
 
     }
@@ -670,7 +671,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
             speechRecognizer?.stopListening()
 
             binding.mainVaMicBtnImageFilterView.scaleUpToVisible()
-            binding.mainVaMoreImageFilterView.scaleUpToVisible()
+            binding.mainVaReportImageFilterView.scaleUpToVisible()
         }
 
         super.onError(p0)
@@ -742,7 +743,7 @@ class MainDialog : CustomBottomSheetDialogFragment(), RecognitionVACallbacks,
             }
 
             onAnimationEnd {
-                imageView.fadeOutToGone() {
+                imageView.fadeOutToGone {
                     //remove image view after hiding it
                     binding.labibaVaDialogConstraintLayout.removeView(imageView)
                 }

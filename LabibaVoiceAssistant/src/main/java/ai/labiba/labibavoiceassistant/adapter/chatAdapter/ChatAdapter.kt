@@ -190,7 +190,7 @@ class ChatAdapter(private val listUpdatedListener: (() -> Unit)? = null) :
 
      fun getLastBotResponse():Chat?{
         return diff.currentList.findLast {
-            it.type == ChatType.BOT_TEXT
+            it.type == ChatType.BOT_TEXT || it.type == ChatType.CHOICES
         }
     }
 

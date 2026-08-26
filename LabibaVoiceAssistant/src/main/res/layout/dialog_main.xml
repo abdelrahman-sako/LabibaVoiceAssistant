@@ -68,7 +68,7 @@
 
         </HorizontalScrollView>
 
-        <androidx.constraintlayout.utils.widget.ImageFilterView
+        <!--<androidx.constraintlayout.utils.widget.ImageFilterView
             android:id="@+id/main_va_more_image_filter_view"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -76,6 +76,21 @@
             android:src="@drawable/ic_more_vert"
             android:scaleType="centerInside"
             app:round="8dp"
+            android:background="?attr/selectableItemBackground"
+            app:layout_constraintBottom_toBottomOf="@+id/main_va_mic_btn_image_filter_view"
+            app:layout_constraintEnd_toStartOf="@+id/main_va_mic_btn_image_filter_view"
+            app:layout_constraintTop_toBottomOf="@+id/main_va_suggestion_horizontal_scoll_view"
+            />-->
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:id="@+id/main_va_report_image_filter_view"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_flag"
+            android:scaleType="centerInside"
+            app:round="8dp"
+            app:tint="@color/black"
             android:background="?attr/selectableItemBackground"
             app:layout_constraintBottom_toBottomOf="@+id/main_va_mic_btn_image_filter_view"
             app:layout_constraintEnd_toStartOf="@+id/main_va_mic_btn_image_filter_view"
