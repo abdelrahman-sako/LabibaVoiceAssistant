@@ -10,6 +10,7 @@ import ai.labiba.labibavoiceassistant.other.Constants
 import ai.labiba.labibavoiceassistant.utils.apiHandleResponse.HandleResults
 import ai.labiba.labibavoiceassistant.utils.apiHandleResponse.Resource
 import ai.labiba.labibavoiceassistant.utils.ext.logd
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -65,11 +66,16 @@ class MainDialogViewModel : ViewModel() {
     }
 
     fun requestTextToSpeech(text: String,language:LabibaLanguages,ssml:Boolean = false) {
+        val cleanText = if (!ssml) {
+            HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY).toString().trim()
+        } else {
+            text
+        }
         mTTSJob = viewModelScope.launch(Dispatchers.IO) {
             _speechAudioLink.postValue(Resource.Loading())
 
             try {
-                val call = apiRepository.getTextToSpeech(text,language,ssml.toString())
+                val call = apiRepository.getTextToSpeech(cleanText,language,ssml.toString())
 
                 if (call.body() != null && call.isSuccessful && call.body()?.status != "error") {
 

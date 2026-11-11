@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         //general settings
         theme.themeSettings =
-            LabibaVAThemeSettings.Builder().enableAutoListening(true).enableTextToSpeech(false)
+            LabibaVAThemeSettings.Builder().enableAutoListening(false).enableTextToSpeech(true)
                 .build()
 
         theme.general = LabibaVAGeneral.Builder()
